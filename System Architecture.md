@@ -2,8 +2,6 @@
 
 ## Overview
 
-The system uses a three-tier architecture consisting of the Presentation Layer, Application Layer, and Data Layer.
-
 ```mermaid
 flowchart TB
 
