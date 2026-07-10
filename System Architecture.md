@@ -1,37 +1,63 @@
-graph TD
+# System Architecture
 
-A[ลูกค้า]
-B[ผู้ดูแลระบบ]
+## Overview
 
-C[หน้าแรก]
-D[หน้าสินค้า]
-E[ตะกร้าสินค้า]
-F[หน้าชำระเงิน]
+The system uses a three-tier architecture consisting of the Presentation Layer, Application Layer, and Data Layer.
 
-G[จัดการสินค้า]
-H[จัดการคำสั่งซื้อ]
+```mermaid
+flowchart TB
 
-I[Frontend<br/>React]
-J[Backend<br/>Node.js]
-K[(MySQL)]
-L[(Local Storage)]
+    subgraph Users
+        Customer["Customer"]
+        Admin["Store Administrator"]
+        SuperAdmin["System Administrator"]
+    end
 
-A --> C
-A --> D
-A --> E
-A --> F
+    subgraph Frontend
+        React["React Web Application<br/>React Router"]
+    end
 
-B --> G
-B --> H
+    subgraph Backend
+        Express["Node.js + Express REST API"]
 
-C --> I
-D --> I
-E --> I
-F --> I
+        Auth["Authentication (JWT)"]
+        Product["Product Management"]
+        Search["Search Module"]
+        Cart["Shopping Cart"]
+        Order["Order Management"]
+        Payment["Mock Payment"]
+        Warranty["Warranty Management"]
+        AdminModule["Admin Management"]
+    end
 
-G --> I
-H --> I
+    subgraph Storage
+        Upload["Local Image Storage"]
+        DB["MySQL Database"]
+    end
 
-I --> J
-J --> K
-I --> L
+    Customer --> React
+    Admin --> React
+    SuperAdmin --> React
+
+    React --> Express
+
+    Express --> Auth
+    Express --> Product
+    Express --> Search
+    Express --> Cart
+    Express --> Order
+    Express --> Payment
+    Express --> Warranty
+    Express --> AdminModule
+
+    Product --> Upload
+
+    Auth --> DB
+    Product --> DB
+    Search --> DB
+    Cart --> DB
+    Order --> DB
+    Payment --> DB
+    Warranty --> DB
+    AdminModule --> DB
+```
