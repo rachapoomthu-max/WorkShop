@@ -41,15 +41,20 @@ E-Commerce Platform for Computer Hardware and Gaming Gear
 ## ผู้ใช้งาน (Actors)
 
 - ลูกค้า (Customer)
+- ผู้ดูแลร้านค้า (Admin)
 - ผู้ดูแลระบบ (Administrator)
 
 ## ความสามารถหลักของระบบ (Main Functions)
 
-1. สมัครสมาชิก / เข้าสู่ระบบ
-2. ดูและค้นหาสินค้า
-3. เพิ่มสินค้าใส่รถเข็น
-4. สั่งซื้อสินค้า
-5. ดูแลระบบจัดการสินค้าและคำสั่งซื้อ
+1. การจัดการสมาชิก (Register / Login) 
+2. การจัดการข้อมูลสินค้า 
+3. การค้นหาและแสดงรายละเอียดสินค้า 
+4. ระบบตะกร้าสินค้า (Shopping Cart) 
+5. ระบบสั่งซื้อสินค้า (Order Management)
+6. ระบบชำระเงิน (Simulation หรือ Mockup ได้) 
+7. ระบบติดตามสถานะคำสั่งซื้อ 
+8. ระบบจัดการสินค้าและคำสั่งซื้อสำหรับผู้ดูแลระบบ 
+9. รายงานหรือ Dashboard สรุปขอมูลเบื้องตน
 
 ---
 
@@ -134,3 +139,6 @@ E-Commerce Platform for Computer Hardware and Gaming Gear
 | 3 | พัฒนา Backend และฐานข้อมูล (Backend & Database Development) | พัฒนาส่วนหลังบ้านด้วย Node.js และสร้างฐานข้อมูล MySQL เพื่อใช้จัดการและเชื่อมต่อข้อมูลสินค้าและคำสั่งซื้อ |
 | 4 | ทดสอบระบบและนำเสนอผลงาน (Testing & Presentation) | ทำการทดสอบระบบแบบ Manual Testing และทำ UAT ตรวจสอบความถูกต้อง พร้อมจัดทำสรุปเพื่อนำเสนอผลงาน |
 ---
+
+SourceTree และ Commit History
+![SourceTree Commit History](Image/SourceTree.png)
