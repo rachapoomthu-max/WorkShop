@@ -1,8 +1,3 @@
-# System Architecture
-
-## Overview
-
-```mermaid
 flowchart TB
 
     subgraph Users
@@ -11,24 +6,24 @@ flowchart TB
         SuperAdmin["System Administrator"]
     end
 
-    subgraph Frontend
+    subgraph Presentation_Layer["Presentation Layer"]
         React["React Web Application<br/>React Router"]
     end
 
-    subgraph Backend
+    subgraph Application_Layer["Application Layer"]
         Express["Node.js + Express REST API"]
 
-        Auth["Authentication (JWT)"]
+        Auth["Authentication"]
         Product["Product Management"]
         Search["Search Module"]
         Cart["Shopping Cart"]
         Order["Order Management"]
         Payment["Mock Payment"]
         Warranty["Warranty Management"]
-        AdminModule["Admin Management"]
+        AdminModule["Administration Module"]
     end
 
-    subgraph Storage
+    subgraph Data_Layer["Data Layer"]
         Upload["Local Image Storage"]
         DB["MySQL Database"]
     end
@@ -58,4 +53,3 @@ flowchart TB
     Payment --> DB
     Warranty --> DB
     AdminModule --> DB
-```

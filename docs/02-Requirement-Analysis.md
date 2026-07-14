@@ -175,45 +175,50 @@ The TechPulse E-Commerce System consists of three primary actors: Customer, Admi
 | UC-007 | Filter Products | Customer | Filter products by category, brand, or price. |
 | UC-008 | View Product Detail | Customer | View detailed information about a selected product. |
 | UC-009 | Manage Shopping Cart | Customer | Add, update, or remove products in the shopping cart. |
-| UC-010 | Checkout | Customer | Proceed with purchasing products in the shopping cart. |
-| UC-011 | Select Shipping Address | Customer | Select a shipping address during checkout. |
-| UC-012 | Select Payment Method | Customer | Select a payment method during checkout. |
-| UC-013 | Place Order | Customer | Create a new order after confirming checkout. |
-| UC-014 | Make Payment | Customer | Complete payment for the created order. |
-| UC-015 | View My Orders | Customer | View order history and order details. |
-| UC-016 | Track Order | Customer | Track the delivery status of an order. |
-| UC-017 | View Warranty | Customer | View warranty information for purchased products. |
-| UC-018 | Submit Warranty Claim | Customer | Submit a warranty claim for a purchased product. |
+| UC-010 | Manage Address | Customer | Manage shipping addresses. |
+| UC-011 | Add Address | Customer | Add a new shipping address. |
+| UC-012 | Update Address | Customer | Update an existing shipping address. |
+| UC-013 | Delete Address | Customer | Remove an existing shipping address. |
+| UC-014 | Set Default Address | Customer | Set a shipping address as the default address. |
+| UC-015 | Checkout | Customer | Proceed with purchasing products in the shopping cart. |
+| UC-016 | Select Shipping Address | Customer | Select a shipping address during checkout. |
+| UC-017 | Select Payment Method | Customer | Select a payment method during checkout. |
+| UC-018 | Place Order | Customer | Create a new order after confirming checkout. |
+| UC-019 | Make Payment | Customer | Complete payment for the created order. |
+| UC-020 | View My Orders | Customer | View order history and order details. |
+| UC-021 | Track Order | Customer | Track the delivery status of an order. |
+| UC-022 | View Warranty | Customer | View warranty information for purchased products. |
+| UC-023 | Submit Warranty Claim | Customer | Submit a warranty claim for a purchased product. |
 
 ### Admin Use Cases
 
 | Use Case ID | Use Case Name | Primary Actor | Brief Description |
 |-------------|---------------|---------------|-------------------|
-| UC-019 | Login | Admin | Authenticate and access the administration system. |
-| UC-020 | Logout | Admin | End the current administrator session securely. |
-| UC-021 | View Dashboard | Admin | View business statistics and system overview. |
-| UC-022 | Manage Products | Admin | Add, edit, delete, and maintain product information. |
-| UC-023 | Manage Categories | Admin | Create, update, and remove product categories. |
-| UC-024 | Manage Orders | Admin | View and update customer order information. |
-| UC-025 | Manage Warranty Claims | Admin | Review and process customer warranty claims. |
-| UC-026 | View Customer Information | Admin | View customer profiles and purchase history. |
+| UC-024 | Login | Admin | Authenticate and access the administration system. |
+| UC-025 | Logout | Admin | End the current administrator session securely. |
+| UC-026 | View Dashboard | Admin | View business statistics and system overview. |
+| UC-027 | Manage Products | Admin | Add, edit, delete, and maintain product information. |
+| UC-028 | Manage Categories | Admin | Create, update, and remove product categories. |
+| UC-029 | Manage Orders | Admin | View and update customer order information. |
+| UC-030 | Manage Warranty Claims | Admin | Review and process customer warranty claims. |
+| UC-031 | View Customer Information | Admin | View customer profiles and purchase history. |
 
 ### SuperAdmin Use Cases
 
 | Use Case ID | Use Case Name | Primary Actor | Brief Description |
 |-------------|---------------|---------------|-------------------|
-| UC-027 | Login | SuperAdmin | Authenticate and access the system with full privileges. |
-| UC-028 | Logout | SuperAdmin | End the current SuperAdmin session securely. |
-| UC-029 | Manage Admin Accounts | SuperAdmin | Create, update, and manage administrator accounts. |
-| UC-030 | Manage Roles | SuperAdmin | Manage user roles and permissions. |
-| UC-031 | Manage System Settings | SuperAdmin | Configure system-wide settings. |
-| UC-032 | View System Logs | SuperAdmin | View system activity logs for auditing purposes. |
+| UC-032 | Login | SuperAdmin | Authenticate and access the system with full privileges. |
+| UC-033 | Logout | SuperAdmin | End the current SuperAdmin session securely. |
+| UC-034 | Manage Admin Accounts | SuperAdmin | Create, update, and manage administrator accounts. |
+| UC-035 | Manage Roles | SuperAdmin | Manage user roles and permissions. |
+| UC-036 | Manage System Settings | SuperAdmin | Configure system-wide settings. |
+| UC-037 | View System Logs | SuperAdmin | View system activity logs for auditing purposes. |
 
 ---
 
 ## 2.5 Use Case Diagram
 
-![useCase](/Image/UseCase.drawio.png)
+![useCase](/Image/Untitled%20Diagram.drawio.png)
 
 ---
 
@@ -484,7 +489,157 @@ The TechPulse E-Commerce System consists of three primary actors: Customer, Admi
 
 ---
 
-## UC-010: Checkout
+# UC-010 Manage Address
+
+| Field | Description |
+|--------|-------------|
+| **Use Case ID** | UC-010 |
+| **Use Case Name** | Manage Address |
+| **Primary Actor** | Customer |
+| **Description** | Allows customers to manage their shipping addresses, including adding, updating, deleting, and setting a default address. |
+| **Preconditions** | Customer is logged into the system. |
+| **Trigger** | Customer opens the **Manage Address** page. |
+| **Postconditions** | Shipping address information is updated successfully. |
+
+## Main Flow
+
+1. Customer opens the Manage Address page.
+2. The system displays all saved shipping addresses.
+3. Customer chooses to add, update, delete, or set a default address.
+4. The system performs the selected operation.
+5. The system updates the address information.
+6. The updated address list is displayed.
+
+## Alternative Flow
+
+### 2A. No shipping addresses found
+
+- The system displays an empty address list.
+- Customer may add a new shipping address.
+
+---
+
+# UC-011 Add Address
+
+| Field | Description |
+|--------|-------------|
+| **Use Case ID** | UC-011 |
+| **Use Case Name** | Add Address |
+| **Primary Actor** | Customer |
+| **Description** | Allows customers to add a new shipping address. This use case is included by **UC-010 Manage Address**. |
+| **Preconditions** | Customer is logged into the system. |
+| **Trigger** | Customer selects **Add Address**. |
+| **Postconditions** | A new shipping address is added successfully. |
+
+## Main Flow
+
+1. Customer selects **Add Address**.
+2. The system displays the address form.
+3. Customer enters the shipping address information.
+4. Customer submits the form.
+5. The system validates the information.
+6. The system saves the new address.
+7. The updated address list is displayed.
+
+## Alternative Flow
+
+### 5A. Invalid address information
+
+- The system displays validation errors.
+- Customer corrects the information.
+
+---
+
+# UC-012 Update Address
+
+| Field | Description |
+|--------|-------------|
+| **Use Case ID** | UC-012 |
+| **Use Case Name** | Update Address |
+| **Primary Actor** | Customer |
+| **Description** | Allows customers to modify an existing shipping address. This use case is included by **UC-010 Manage Address**. |
+| **Preconditions** | Customer has at least one saved shipping address. |
+| **Trigger** | Customer selects **Edit Address**. |
+| **Postconditions** | Shipping address information is updated successfully. |
+
+## Main Flow
+
+1. Customer selects a shipping address.
+2. The system displays the current address information.
+3. Customer edits the address.
+4. Customer saves the changes.
+5. The system validates the updated information.
+6. The system updates the address.
+7. The updated address list is displayed.
+
+## Alternative Flow
+
+### 5A. Invalid address information
+
+- The system displays validation errors.
+- Customer updates the information again.
+
+---
+
+# UC-013 Delete Address
+
+| Field | Description |
+|--------|-------------|
+| **Use Case ID** | UC-013 |
+| **Use Case Name** | Delete Address |
+| **Primary Actor** | Customer |
+| **Description** | Allows customers to remove a saved shipping address. This use case is included by **UC-010 Manage Address**. |
+| **Preconditions** | Customer has at least one saved shipping address. |
+| **Trigger** | Customer selects **Delete Address**. |
+| **Postconditions** | The selected shipping address is removed from the system. |
+
+## Main Flow
+
+1. Customer selects a shipping address.
+2. Customer selects **Delete Address**.
+3. The system requests confirmation.
+4. Customer confirms the deletion.
+5. The system removes the address.
+6. The updated address list is displayed.
+
+## Alternative Flow
+
+### 4A. Customer cancels the deletion
+
+- The deletion is cancelled.
+- The address remains unchanged.
+
+---
+
+# UC-014 Set Default Address
+
+| Field | Description |
+|--------|-------------|
+| **Use Case ID** | UC-014 |
+| **Use Case Name** | Set Default Address |
+| **Primary Actor** | Customer |
+| **Description** | Allows customers to designate one shipping address as the default address. This use case is included by **UC-010 Manage Address**. |
+| **Preconditions** | Customer has multiple shipping addresses. |
+| **Trigger** | Customer selects **Set Default Address**. |
+| **Postconditions** | The selected address becomes the default shipping address. |
+
+## Main Flow
+
+1. Customer opens the address list.
+2. Customer selects a shipping address.
+3. Customer chooses **Set Default Address**.
+4. The system updates the default address.
+5. The updated address list is displayed.
+
+## Alternative Flow
+
+### 2A. Selected address is already the default address
+
+- The system informs the customer that the selected address is already the default.
+
+---
+
+## UC-015: Checkout
 
 | Field | Description |
 |--------|-------------|
@@ -523,7 +678,7 @@ The TechPulse E-Commerce System consists of three primary actors: Customer, Admi
 
 ---
 
-## UC-011: Select Shipping Address
+## UC-016: Select Shipping Address
 
 | Field | Description |
 |--------|-------------|
@@ -551,7 +706,7 @@ The TechPulse E-Commerce System consists of three primary actors: Customer, Admi
 
 ---
 
-## UC-012: Select Payment Method
+## UC-017: Select Payment Method
 
 | Field | Description |
 |--------|-------------|
@@ -579,7 +734,7 @@ The TechPulse E-Commerce System consists of three primary actors: Customer, Admi
 
 ---
 
-## UC-013: Place Order
+## UC-018: Place Order
 
 | Field | Description |
 |--------|-------------|
@@ -609,7 +764,7 @@ The TechPulse E-Commerce System consists of three primary actors: Customer, Admi
 
 ---
 
-## UC-014: Make Payment
+## UC-019: Make Payment
 
 | Field | Description |
 |--------|-------------|
@@ -643,7 +798,7 @@ The TechPulse E-Commerce System consists of three primary actors: Customer, Admi
 
 ---
 
-## UC-015: View My Orders
+## UC-020: View My Orders
 
 | Field | Description |
 |--------|-------------|
@@ -670,7 +825,7 @@ The TechPulse E-Commerce System consists of three primary actors: Customer, Admi
 
 ---
 
-## UC-016: Track Order
+## UC-021: Track Order
 
 | Field | Description |
 |--------|-------------|
@@ -698,7 +853,7 @@ The TechPulse E-Commerce System consists of three primary actors: Customer, Admi
 
 ---
 
-## UC-017: View Warranty
+## UC-022: View Warranty
 
 | Field | Description |
 |--------|-------------|
@@ -725,7 +880,7 @@ The TechPulse E-Commerce System consists of three primary actors: Customer, Admi
 
 ---
 
-## UC-018: Submit Warranty Claim
+## UC-023: Submit Warranty Claim
 
 | Field | Description |
 |--------|-------------|
@@ -764,7 +919,7 @@ The TechPulse E-Commerce System consists of three primary actors: Customer, Admi
 
 ---
 
-## UC-019: Login
+## UC-024: Login
 
 | Field | Description |
 |--------|-------------|
@@ -794,7 +949,7 @@ The TechPulse E-Commerce System consists of three primary actors: Customer, Admi
 
 ---
 
-## UC-020: Logout
+## UC-025: Logout
 
 | Field | Description |
 |--------|-------------|
@@ -818,7 +973,7 @@ The TechPulse E-Commerce System consists of three primary actors: Customer, Admi
 
 ---
 
-## UC-021: View Dashboard
+## UC-026: View Dashboard
 
 | Field | Description |
 |--------|-------------|
@@ -845,7 +1000,7 @@ The TechPulse E-Commerce System consists of three primary actors: Customer, Admi
 
 ---
 
-## UC-022: Manage Products
+## UC-027: Manage Products
 
 | Field | Description |
 |--------|-------------|
@@ -880,7 +1035,7 @@ The TechPulse E-Commerce System consists of three primary actors: Customer, Admi
 
 ---
 
-## UC-023: Manage Categories
+## UC-028: Manage Categories
 
 | Field | Description |
 |--------|-------------|
@@ -909,7 +1064,7 @@ The TechPulse E-Commerce System consists of three primary actors: Customer, Admi
 
 ---
 
-## UC-024: Manage Orders
+## UC-029: Manage Orders
 
 | Field | Description |
 |--------|-------------|
@@ -939,7 +1094,7 @@ The TechPulse E-Commerce System consists of three primary actors: Customer, Admi
 
 ---
 
-## UC-025: Manage Warranty Claims
+## UC-030: Manage Warranty Claims
 
 | Field | Description |
 |--------|-------------|
@@ -970,7 +1125,7 @@ The TechPulse E-Commerce System consists of three primary actors: Customer, Admi
 
 ---
 
-## UC-026: View Customer Information
+## UC-031: View Customer Information
 
 | Field | Description |
 |--------|-------------|
@@ -1002,7 +1157,7 @@ The TechPulse E-Commerce System consists of three primary actors: Customer, Admi
 
 ---
 
-## UC-027: Login
+## UC-032: Login
 
 | Field | Description |
 |--------|-------------|
@@ -1032,7 +1187,7 @@ The TechPulse E-Commerce System consists of three primary actors: Customer, Admi
 
 ---
 
-## UC-028: Logout
+## UC-033: Logout
 
 | Field | Description |
 |--------|-------------|
@@ -1056,7 +1211,7 @@ The TechPulse E-Commerce System consists of three primary actors: Customer, Admi
 
 ---
 
-## UC-029: Manage Admin Accounts
+## UC-034: Manage Admin Accounts
 
 | Field | Description |
 |--------|-------------|
@@ -1090,7 +1245,7 @@ The TechPulse E-Commerce System consists of three primary actors: Customer, Admi
 
 ---
 
-## UC-030: Manage Roles
+## UC-035: Manage Roles
 
 | Field | Description |
 |--------|-------------|
@@ -1120,7 +1275,7 @@ The TechPulse E-Commerce System consists of three primary actors: Customer, Admi
 
 ---
 
-## UC-031: Manage System Settings
+## UC-036: Manage System Settings
 
 | Field | Description |
 |--------|-------------|
@@ -1149,7 +1304,7 @@ The TechPulse E-Commerce System consists of three primary actors: Customer, Admi
 
 ---
 
-## UC-032: View System Logs
+## UC-037: View System Logs
 
 | Field | Description |
 |--------|-------------|
