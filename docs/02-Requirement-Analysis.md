@@ -57,7 +57,6 @@
 
 The following non-functional requirements define the quality attributes and operational characteristics of the TechPulse E-Commerce System.
 
----
 
 ## 2.2.1 Performance
 
