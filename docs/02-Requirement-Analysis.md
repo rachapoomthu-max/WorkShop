@@ -218,7 +218,7 @@ The TechPulse E-Commerce System consists of three primary actors: Customer, Admi
 
 ## 2.5 Use Case Diagram
 
-![useCase](/Image/Untitled%20Diagram.drawio.png)
+![useCase](/Image/useCase.drawio.png)
 
 ---
 

@@ -79,17 +79,18 @@ The TechPulse E-Commerce System adopts a three-tier architecture consisting of t
 ```mermaid
 classDiagram
 
-%% =================================
-%% USER
-%% =================================
+%% =====================================================
+%% USER MANAGEMENT
+%% =====================================================
 
 class User{
 +userId : int
-+name : string
++firstName : string
++lastName : string
 +email : string
 +passwordHash : string
 +phone : string
-+address : string
++status : string
 
 +register()
 +login()
@@ -106,9 +107,11 @@ class Customer{
 +manageShoppingCart()
 
 +checkout()
+
 +viewOrders()
 
 +viewWarranty()
+
 +submitWarrantyClaim()
 }
 
@@ -132,38 +135,71 @@ User <|-- Customer
 User <|-- Admin
 Admin <|-- SuperAdmin
 
-%% =================================
+%% =====================================================
+%% ROLE
+%% =====================================================
+
+class Role{
++roleId : int
++roleName : string
+}
+
+User "*" --> "1" Role
+
+%% =====================================================
+%% ADDRESS
+%% =====================================================
+
+class Address{
++addressId : int
++recipientName : string
++phone : string
++addressLine : string
++district : string
++province : string
++postalCode : string
++isDefault : boolean
+}
+
+User "1" -- "*" Address
+
+%% =====================================================
 %% PRODUCT
-%% =================================
+%% =====================================================
 
 class Product{
-
 +productId : int
++sku : string
 +name : string
-+brand : string
 +description : string
 +price : decimal
 +stock : int
 +status : string
-
++imageURL : string
 }
 
 class Category{
-
 +categoryId : int
 +categoryName : string
-
 }
 
-Category "1" -- "*" Product
+class Brand{
++brandId : int
++brandName : string
+}
 
-%% =================================
+Category "1" --> "*" Product
+Brand "1" --> "*" Product
+
+%% =====================================================
 %% SHOPPING CART
-%% =================================
+%% =====================================================
 
 class ShoppingCart{
 
 +cartId : int
+
++totalPrice : decimal
 
 +addItem()
 
@@ -183,15 +219,15 @@ class CartItem{
 
 }
 
-Customer "1" --> "1" ShoppingCart
+Customer "1" *-- "1" ShoppingCart
 
 ShoppingCart "1" *-- "*" CartItem
 
 CartItem "*" --> "1" Product
 
-%% =================================
+%% =====================================================
 %% ORDER
-%% =================================
+%% =====================================================
 
 class Order{
 
@@ -202,6 +238,12 @@ class Order{
 +status : string
 
 +totalAmount : decimal
+
++shippingName : string
+
++shippingPhone : string
+
++shippingAddress : string
 
 +placeOrder()
 
@@ -223,9 +265,9 @@ Order "1" *-- "*" OrderItem
 
 OrderItem "*" --> "1" Product
 
-%% =================================
+%% =====================================================
 %% PAYMENT
-%% =================================
+%% =====================================================
 
 class Payment{
 
@@ -237,22 +279,30 @@ class Payment{
 
 +paymentStatus : string
 
++paymentDate : Date
+
++transactionId : string
+
 +processPayment()
 
 }
 
 Order "1" --> "1" Payment
 
-%% =================================
+%% =====================================================
 %% WARRANTY
-%% =================================
+%% =====================================================
 
 class Warranty{
 
 +warrantyId : int
+
 +provider : string
+
 +serialNumber : string
-+expiryDate : Date
+
++warrantyEndDate : Date
+
 +status : string
 
 }
@@ -260,26 +310,44 @@ class Warranty{
 class WarrantyClaim{
 
 +claimId : int
+
 +claimDate : Date
+
 +description : string
+
 +claimStatus : string
+
++adminRemark : string
+
++submittedAt : Date
+
++completedAt : Date
 
 }
 
-OrderItem "1" --> "1" Warranty
+OrderItem "1" --> "0..1" Warranty
 
 Warranty "1" --> "*" WarrantyClaim
 
-%% =================================
-%% DASHBOARD SERVICE
-%% =================================
+Customer "1" --> "*" WarrantyClaim
+
+%% =====================================================
+%% DASHBOARD
+%% =====================================================
 
 class DashboardService{
 
 +viewSales()
+
 +viewRevenue()
+
 +viewOrders()
+
 +viewCustomers()
+
++viewProducts()
+
++viewWarrantyClaims()
 
 }
 
