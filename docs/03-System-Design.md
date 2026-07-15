@@ -379,216 +379,121 @@ The Customer Purchase Flow sequence diagram illustrates the complete purchasing 
 ```mermaid
 sequenceDiagram
 
-autonumber
-
 actor Customer
 
-participant Frontend as React Frontend
+participant FE as React Frontend
 participant ProductController
 participant CartController
-participant AddressController
 participant OrderController
 participant PaymentController
 participant DB as MySQL Database
 
-%% ==========================
+%% =====================================
 %% Browse Products
-%% ==========================
+%% =====================================
 
-Customer->>Frontend: Browse Products
-
-activate Frontend
-
-Frontend->>ProductController: GET /products
-
-activate ProductController
-
-ProductController->>DB: Query Products
-
-activate DB
-
+Customer->>FE: Browse Products
+FE->>ProductController: GET /products
+ProductController->>DB: Retrieve Product List
 DB-->>ProductController: Product List
+ProductController-->>FE: Return Product List
+FE-->>Customer: Display Products
 
-deactivate DB
-
-ProductController-->>Frontend: Return Products
-
-deactivate ProductController
-
-Frontend-->>Customer: Display Product List
-
-deactivate Frontend
-
-%% ==========================
+%% =====================================
 %% View Product Detail
-%% ==========================
+%% =====================================
 
-Customer->>Frontend: Select Product
-
-activate Frontend
-
-Frontend->>ProductController: GET /products/{id}
-
-activate ProductController
-
-ProductController->>DB: Query Product Detail
-
-activate DB
-
+Customer->>FE: View Product Detail
+FE->>ProductController: GET /products/{id}
+ProductController->>DB: Retrieve Product Detail
 DB-->>ProductController: Product Detail
+ProductController-->>FE: Return Product Detail
+FE-->>Customer: Display Product Detail
 
-deactivate DB
+%% =====================================
+%% Add Product to Cart
+%% =====================================
 
-ProductController-->>Frontend: Return Product Detail
-
-deactivate ProductController
-
-Frontend-->>Customer: Display Product Detail
-
-deactivate Frontend
-
-%% ==========================
-%% Add to Cart
-%% ==========================
-
-Customer->>Frontend: Add to Cart
-
-activate Frontend
-
-Frontend->>CartController: POST /cart
-
-activate CartController
-
+Customer->>FE: Add Product to Cart
+FE->>CartController: POST /cart
 CartController->>DB: Save Cart Item
-
-activate DB
-
 DB-->>CartController: Cart Updated
+CartController-->>FE: Success
+FE-->>Customer: Display Updated Cart
 
-deactivate DB
-
-CartController-->>Frontend: Cart Updated
-
-deactivate CartController
-
-Frontend-->>Customer: Display Shopping Cart
-
-deactivate Frontend
-
-%% ==========================
+%% =====================================
 %% Checkout
-%% ==========================
+%% =====================================
 
-Customer->>Frontend: Checkout
+Customer->>FE: Checkout
 
-activate Frontend
+FE->>OrderController: Validate JWT
+OrderController-->>FE: Authenticated
 
-Frontend->>AddressController: GET /addresses
+FE->>OrderController: Validate Shopping Cart
+OrderController->>DB: Retrieve Cart Items
+DB-->>OrderController: Cart Items
+OrderController-->>FE: Cart Valid
 
-activate AddressController
+Customer->>FE: Select Shipping Address
+Customer->>FE: Select Payment Method
 
-AddressController->>DB: Retrieve Customer Addresses
+FE->>OrderController: Place Order
 
-activate DB
+%% =====================================
+%% Validate Stock
+%% =====================================
 
-DB-->>AddressController: Address List
+OrderController->>DB: Validate Product Stock
+DB-->>OrderController: Stock Result
 
-deactivate DB
+alt Stock Available
 
-AddressController-->>Frontend: Return Address List
+    OrderController->>DB: Create Order
+    DB-->>OrderController: Order Created
 
-deactivate AddressController
+    loop For Each Cart Item
 
-Frontend-->>Customer: Display Shipping Addresses
+        OrderController->>DB: Create Order Item
+        DB-->>OrderController: Order Item Created
 
-Customer->>Frontend: Select Shipping Address
+        OrderController->>DB: Update Product Stock
+        DB-->>OrderController: Stock Updated
 
-Frontend->>OrderController: Submit addressId
+    end
 
-activate OrderController
+    OrderController->>PaymentController: Process Payment
 
-OrderController-->>Frontend: Address Valid
+    PaymentController->>DB: Create Payment Record
+    DB-->>PaymentController: Payment Recorded
 
-Frontend->>OrderController: Select Payment Method
+    alt Payment Success
 
-OrderController-->>Frontend: Payment Method Accepted
+        PaymentController-->>OrderController: Payment Successful
 
-deactivate OrderController
+        OrderController->>DB: Update Order Status = PAID
+        DB-->>OrderController: Status Updated
 
-%% ==========================
-%% Place Order
-%% ==========================
+        OrderController->>DB: Clear Shopping Cart
+        DB-->>OrderController: Cart Cleared
 
-Customer->>Frontend: Place Order
+        OrderController-->>FE: Order Completed
+        FE-->>Customer: Display Order Success
 
-Frontend->>OrderController: Create Order
+    else Payment Failed
 
-activate OrderController
+        PaymentController-->>OrderController: Payment Failed
+        OrderController-->>FE: Payment Failed
+        FE-->>Customer: Display Payment Failed
 
-OrderController->>DB: Insert Order
+    end
 
-activate DB
+else Out of Stock
 
-DB-->>OrderController: Order ID
-
-deactivate DB
-
-loop For each Cart Item
-
-OrderController->>DB: Insert Order Item
-
-DB-->>OrderController: Success
-
-end
-
-%% ==========================
-%% Payment
-%% ==========================
-
-OrderController->>PaymentController: Process Payment
-
-activate PaymentController
-
-PaymentController->>DB: Update Payment Status
-
-activate DB
-
-DB-->>PaymentController: Payment Completed
-
-deactivate DB
-
-alt Payment Success
-
-PaymentController-->>OrderController: Payment Success
-
-OrderController->>DB: Update Order Status
-
-DB-->>OrderController: Paid
-
-OrderController->>DB: Clear Shopping Cart
-
-DB-->>OrderController: Cart Cleared
-
-OrderController-->>Frontend: Order Completed
-
-Frontend-->>Customer: Display Order Success
-
-else Payment Failed
-
-PaymentController-->>OrderController: Payment Failed
-
-OrderController-->>Frontend: Display Payment Failed
-
-Frontend-->>Customer: Retry Payment
+    OrderController-->>FE: Product Out of Stock
+    FE-->>Customer: Display Out of Stock Message
 
 end
-
-deactivate PaymentController
-
-deactivate OrderController
-
-deactivate Frontend
-
 ```
 
 ---
@@ -600,97 +505,78 @@ The Warranty Claim Flow sequence diagram illustrates the process of submitting a
 ```mermaid
 sequenceDiagram
 
-autonumber
-
 actor Customer
 
-participant Frontend as React Frontend
+participant FE as React Frontend
 participant WarrantyController
 participant DB as MySQL Database
 
-%% ======================================
-%% View Order History
-%% ======================================
+%% =====================================
+%% View Warranty List
+%% =====================================
 
-Customer->>Frontend: View My Orders
+Customer->>FE: View My Warranties
+FE->>WarrantyController: GET /warranties/my
 
-activate Frontend
+WarrantyController->>DB: Retrieve Customer Warranties
+DB-->>WarrantyController: Warranty List
 
-Frontend->>WarrantyController: GET /orders
+WarrantyController-->>FE: Return Warranty List
+FE-->>Customer: Display Warranty List
 
-activate WarrantyController
+%% =====================================
+%% View Warranty Detail
+%% =====================================
 
-WarrantyController->>DB: Retrieve Customer Orders
+Customer->>FE: View Warranty Detail
 
-activate DB
+FE->>WarrantyController: GET /warranties/{id}
 
-DB-->>WarrantyController: Order List
+WarrantyController->>DB: Retrieve Warranty Detail
+DB-->>WarrantyController: Warranty Detail
 
-deactivate DB
+WarrantyController-->>FE: Return Warranty Detail
+FE-->>Customer: Display Warranty Detail
 
-WarrantyController-->>Frontend: Return Order List
-
-Frontend-->>Customer: Display My Orders
-
-deactivate WarrantyController
-
-deactivate Frontend
-
-%% ======================================
-%% View Warranty
-%% ======================================
-
-Customer->>Frontend: View Warranty Information
-
-activate Frontend
-
-Frontend->>WarrantyController: GET /warranty/{orderId}
-
-activate WarrantyController
-
-WarrantyController->>DB: Retrieve Warranty Information
-
-activate DB
-
-DB-->>WarrantyController: Warranty Details
-
-deactivate DB
-
-WarrantyController-->>Frontend: Return Warranty Information
-
-Frontend-->>Customer: Display Warranty Details
-
-deactivate WarrantyController
-
-deactivate Frontend
-
-%% ======================================
+%% =====================================
 %% Submit Warranty Claim
-%% ======================================
+%% =====================================
 
-Customer->>Frontend: Submit Warranty Claim
+Customer->>FE: Submit Warranty Claim
 
-activate Frontend
+FE->>WarrantyController: Validate JWT
+WarrantyController-->>FE: Authenticated
 
-Frontend->>WarrantyController: POST /warranty/claim
+FE->>WarrantyController: Validate Warranty
 
-activate WarrantyController
+WarrantyController->>DB: Check Warranty Owner
+DB-->>WarrantyController: Owner Verified
 
-WarrantyController->>DB: Save Warranty Claim
+WarrantyController->>DB: Check Warranty Expiry
+DB-->>WarrantyController: Warranty Status
 
-activate DB
+alt Warranty Active
 
-DB-->>WarrantyController: Claim Created
+    WarrantyController->>DB: Check Existing Claim
+    DB-->>WarrantyController: No Existing Claim
 
-deactivate DB
+    WarrantyController->>DB: Create Warranty Claim
+    DB-->>WarrantyController: Claim Created
 
-WarrantyController-->>Frontend: Warranty Claim Submitted
+    WarrantyController-->>FE: Claim Submitted Successfully
+    FE-->>Customer: Display Success Message
 
-Frontend-->>Customer: Display Claim Success
+else Warranty Expired
 
-deactivate WarrantyController
+    WarrantyController-->>FE: Warranty Expired
+    FE-->>Customer: Display Warranty Expired Message
 
-deactivate Frontend
+else Claim Already Exists
+
+    WarrantyController-->>FE: Duplicate Claim
+    FE-->>Customer: Display Duplicate Claim Message
+
+end
 ```
 
 ---
@@ -702,115 +588,81 @@ The Manage Warranty Claim Flow sequence diagram illustrates how administrators r
 ```mermaid
 sequenceDiagram
 
-autonumber
-
 actor Admin
 
-participant Frontend as React Frontend
+participant FE as React Frontend
 participant WarrantyController
 participant DB as MySQL Database
 
-%% ======================================
+%% =====================================
 %% View Warranty Claims
-%% ======================================
+%% =====================================
 
-Admin->>Frontend: Open Warranty Claims
+Admin->>FE: View Warranty Claim List
 
-activate Frontend
-
-Frontend->>WarrantyController: GET /warranty/claims
-
-activate WarrantyController
+FE->>WarrantyController: GET /warranty-claims
 
 WarrantyController->>DB: Retrieve Warranty Claims
-
-activate DB
-
 DB-->>WarrantyController: Warranty Claim List
 
-deactivate DB
+WarrantyController-->>FE: Return Warranty Claim List
+FE-->>Admin: Display Warranty Claim List
 
-WarrantyController-->>Frontend: Return Claim List
-
-Frontend-->>Admin: Display Warranty Claims
-
-deactivate WarrantyController
-
-deactivate Frontend
-
-%% ======================================
+%% =====================================
 %% View Claim Detail
-%% ======================================
+%% =====================================
 
-Admin->>Frontend: Select Warranty Claim
+Admin->>FE: View Warranty Claim Detail
 
-activate Frontend
+FE->>WarrantyController: GET /warranty-claims/{id}
 
-Frontend->>WarrantyController: GET /warranty/claims/{claimId}
+WarrantyController->>DB: Retrieve Warranty Claim Detail
+DB-->>WarrantyController: Warranty Claim Detail
 
-activate WarrantyController
+WarrantyController-->>FE: Return Warranty Claim Detail
+FE-->>Admin: Display Warranty Claim Detail
 
-WarrantyController->>DB: Retrieve Claim Detail
-
-activate DB
-
-DB-->>WarrantyController: Claim Detail
-
-deactivate DB
-
-WarrantyController-->>Frontend: Return Claim Detail
-
-Frontend-->>Admin: Display Claim Detail
-
-deactivate WarrantyController
-
-deactivate Frontend
-
-%% ======================================
+%% =====================================
 %% Review Warranty Claim
-%% ======================================
+%% =====================================
 
-Admin->>Frontend: Review Warranty Claim
+Admin->>FE: Review Warranty Claim
 
-activate Frontend
+FE->>WarrantyController: Validate JWT
+WarrantyController-->>FE: Authenticated
 
-Frontend->>WarrantyController: Update Claim Status
+FE->>WarrantyController: Validate Warranty Claim
 
-activate WarrantyController
+WarrantyController->>DB: Check Claim Status
+DB-->>WarrantyController: Claim Status
+
+%% =====================================
+%% Update Warranty Claim
+%% =====================================
+
+Admin->>FE: Enter Admin Remark
+
+Admin->>FE: Approve / Reject Claim
+
+FE->>WarrantyController: Update Claim Status
 
 alt Claim Approved
 
-WarrantyController->>DB: Update Status = Approved
+    WarrantyController->>DB: Update Claim Status = APPROVED
+    DB-->>WarrantyController: Status Updated
 
-activate DB
-
-DB-->>WarrantyController: Update Successful
-
-deactivate DB
-
-WarrantyController-->>Frontend: Claim Approved
-
-Frontend-->>Admin: Display Approval Success
+    WarrantyController-->>FE: Claim Approved
+    FE-->>Admin: Display Success Message
 
 else Claim Rejected
 
-WarrantyController->>DB: Update Status = Rejected
+    WarrantyController->>DB: Update Claim Status = REJECTED
+    DB-->>WarrantyController: Status Updated
 
-activate DB
-
-DB-->>WarrantyController: Update Successful
-
-deactivate DB
-
-WarrantyController-->>Frontend: Claim Rejected
-
-Frontend-->>Admin: Display Rejection Success
+    WarrantyController-->>FE: Claim Rejected
+    FE-->>Admin: Display Success Message
 
 end
-
-deactivate WarrantyController
-
-deactivate Frontend
 ```
 
 ---
@@ -822,95 +674,77 @@ The Admin Add Product Flow sequence diagram illustrates the process of adding a 
 ```mermaid
 sequenceDiagram
 
-autonumber
-
 actor Admin
 
-participant Frontend as React Frontend
+participant FE as React Frontend
 participant ProductController
 participant UploadModule
-participant DB as MySQL Database
 participant Storage as Uploads Folder
+participant DB as MySQL Database
 
-%% ======================================
+%% =====================================
 %% Open Product Management
-%% ======================================
+%% =====================================
 
-Admin->>Frontend: Open Product Management
+Admin->>FE: Open Product Management
+FE-->>Admin: Display Product List
 
-activate Frontend
+%% =====================================
+%% Open Add Product Form
+%% =====================================
 
-Frontend->>ProductController: GET /products
+Admin->>FE: Open Add Product Form
+FE-->>Admin: Display Product Form
 
-activate ProductController
+%% =====================================
+%% Fill Product Information
+%% =====================================
 
-ProductController->>DB: Retrieve Product List
+Admin->>FE: Enter Product Information
+Admin->>FE: Select Category
+Admin->>FE: Select Brand
+Admin->>FE: Select Product Image
 
-activate DB
+%% =====================================
+%% Upload Product Image
+%% =====================================
 
-DB-->>ProductController: Product List
-
-deactivate DB
-
-ProductController-->>Frontend: Return Product List
-
-Frontend-->>Admin: Display Product List
-
-deactivate ProductController
-
-deactivate Frontend
-
-%% ======================================
-%% Add New Product
-%% ======================================
-
-Admin->>Frontend: Add New Product
-
-activate Frontend
-
-Frontend->>ProductController: Enter Product Information
-
-activate ProductController
-
-%% ======================================
-%% Upload Image
-%% ======================================
-
-Frontend->>UploadModule: Upload Product Image
-
-activate UploadModule
-
+FE->>UploadModule: Upload Product Image
 UploadModule->>Storage: Save Image File
+Storage-->>UploadModule: Image Saved
+UploadModule-->>FE: Return Image URL
 
-activate Storage
+%% =====================================
+%% Submit Product
+%% =====================================
 
-Storage-->>UploadModule: Upload Successful
+Admin->>FE: Submit Product
 
-deactivate Storage
+FE->>ProductController: Validate JWT
+ProductController-->>FE: Authenticated
 
-UploadModule-->>ProductController: Return Image Path
+FE->>ProductController: Validate Product Data
 
-deactivate UploadModule
+alt Product Data Valid
 
-%% ======================================
-%% Save Product
-%% ======================================
+    ProductController->>DB: Validate Category
+    DB-->>ProductController: Category Exists
 
-ProductController->>DB: Save Product Information
+    ProductController->>DB: Validate Brand
+    DB-->>ProductController: Brand Exists
 
-activate DB
+    ProductController->>DB: Create Product
+    DB-->>ProductController: Product Created
 
-DB-->>ProductController: Product Created
+    ProductController-->>FE: Product Created Successfully
+    FE-->>Admin: Display Success Message
 
-deactivate DB
+else Invalid Product Data
 
-ProductController-->>Frontend: Product Created Successfully
+    ProductController-->>FE: Validation Failed
+    FE-->>Admin: Display Validation Error
 
-Frontend-->>Admin: Display Success Message
-
-deactivate ProductController
-
-deactivate Frontend
+end
 ```
 
 ---
@@ -922,101 +756,90 @@ The Admin Manage Order Flow sequence diagram illustrates how administrators mana
 ```mermaid
 sequenceDiagram
 
-autonumber
-
 actor Admin
 
-participant Frontend as React Frontend
-participant ProductController
-participant UploadModule
-participant Storage as Uploads Folder
+participant FE as React Frontend
+participant OrderController
+participant WarrantyController
 participant DB as MySQL Database
 
-%% ==========================================
-%% Open Product Management
-%% ==========================================
+%% =====================================
+%% Open Order Management
+%% =====================================
 
-Admin->>Frontend: Open Product Management
+Admin->>FE: Open Order Management
+FE->>OrderController: GET /orders
 
-activate Frontend
+OrderController->>DB: Retrieve Order List
+DB-->>OrderController: Order List
 
-Frontend->>ProductController: Request Product List
+OrderController-->>FE: Return Order List
+FE-->>Admin: Display Order List
 
-activate ProductController
+%% =====================================
+%% View Order Detail
+%% =====================================
 
-ProductController->>DB: Retrieve Products
+Admin->>FE: View Order Detail
 
-activate DB
+FE->>OrderController: GET /orders/{id}
 
-DB-->>ProductController: Product List
+OrderController->>DB: Retrieve Order Detail
+DB-->>OrderController: Order Detail
 
-deactivate DB
+OrderController-->>FE: Return Order Detail
+FE-->>Admin: Display Order Detail
 
-ProductController-->>Frontend: Return Product List
+%% =====================================
+%% Review Order
+%% =====================================
 
-Frontend-->>Admin: Display Product Management Page
+Admin->>FE: Review Order
 
-deactivate ProductController
+FE->>OrderController: Validate JWT
+OrderController-->>FE: Authenticated
 
-deactivate Frontend
+FE->>OrderController: Validate Order
 
-%% ==========================================
-%% Add New Product
-%% ==========================================
+OrderController->>DB: Check Current Order Status
+DB-->>OrderController: Order Status
 
-Admin->>Frontend: Click Add Product
+%% =====================================
+%% Update Order Status
+%% =====================================
 
-activate Frontend
+Admin->>FE: Approve / Reject Order
 
-Frontend-->>Admin: Display Product Form
+FE->>OrderController: Update Order Status
 
-Admin->>Frontend: Enter Product Information
+alt Order Approved
 
-%% ==========================================
-%% Upload Image
-%% ==========================================
+    OrderController->>DB: Update Order Status = APPROVED
+    DB-->>OrderController: Status Updated
 
-Admin->>Frontend: Select Product Image
+    %% =====================================
+    %% Generate Warranty
+    %% =====================================
 
-Frontend->>UploadModule: Upload Image
+    OrderController->>WarrantyController: Generate Warranty
 
-activate UploadModule
+    WarrantyController->>DB: Create Warranty Record
+    DB-->>WarrantyController: Warranty Created
 
-UploadModule->>Storage: Save Image File
+    WarrantyController-->>OrderController: Warranty Generated
 
-activate Storage
+    OrderController-->>FE: Order Approved Successfully
+    FE-->>Admin: Display Success Message
 
-Storage-->>UploadModule: Image Saved
+else Order Rejected
 
-deactivate Storage
+    OrderController->>DB: Update Order Status = REJECTED
+    DB-->>OrderController: Status Updated
 
-UploadModule-->>Frontend: Return Image Path
+    OrderController-->>FE: Order Rejected Successfully
+    FE-->>Admin: Display Success Message
 
-deactivate UploadModule
-
-%% ==========================================
-%% Save Product
-%% ==========================================
-
-Frontend->>ProductController: Submit Product Data
-
-activate ProductController
-
-ProductController->>DB: Save Product Information
-
-activate DB
-
-DB-->>ProductController: Product Created
-
-deactivate DB
-
-ProductController-->>Frontend: Return Success
-
-Frontend-->>Admin: Display Product Created Successfully
-
-deactivate ProductController
-
-deactivate Frontend
+end
 ```
 
 ---
