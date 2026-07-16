@@ -108,3 +108,295 @@
 ## Screenshot SourceTree 
 
 ![Logo](/Image/SourceTree.png)
+
+## Class Diagram
+
+classDiagram
+
+%% =====================================================
+%% USER MANAGEMENT
+%% =====================================================
+
+class User{
++userId : int
++firstName : string
++lastName : string
++email : string
++passwordHash : string
++phone : string
++status : string
+
++register()
++login()
++logout()
++updateProfile()
+}
+
+class Customer{
++browseProducts()
++searchProducts()
++filterProducts()
++viewProductDetail()
+
++manageShoppingCart()
+
++checkout()
+
++viewOrders()
+
++viewWarranty()
+
++submitWarrantyClaim()
+}
+
+class Admin{
++manageProducts()
++manageCategories()
++manageOrders()
++viewCustomerInformation()
++manageWarrantyClaims()
++viewDashboard()
+}
+
+class SuperAdmin{
++manageAdminAccounts()
++manageRoles()
++manageSystemSettings()
++viewSystemLogs()
+}
+
+User <|-- Customer
+User <|-- Admin
+Admin <|-- SuperAdmin
+
+%% =====================================================
+%% ROLE
+%% =====================================================
+
+class Role{
++roleId : int
++roleName : string
+}
+
+User "*" --> "1" Role
+
+%% =====================================================
+%% ADDRESS
+%% =====================================================
+
+class Address{
++addressId : int
++recipientName : string
++phone : string
++addressLine : string
++district : string
++province : string
++postalCode : string
++isDefault : boolean
+}
+
+User "1" -- "*" Address
+
+%% =====================================================
+%% PRODUCT
+%% =====================================================
+
+class Product{
++productId : int
++sku : string
++name : string
++description : string
++price : decimal
++stock : int
++status : string
++imageURL : string
+}
+
+class Category{
++categoryId : int
++categoryName : string
+}
+
+class Brand{
++brandId : int
++brandName : string
+}
+
+Category "1" --> "*" Product
+Brand "1" --> "*" Product
+
+%% =====================================================
+%% SHOPPING CART
+%% =====================================================
+
+class ShoppingCart{
+
++cartId : int
+
++totalPrice : decimal
+
++addItem()
+
++updateItem()
+
++removeItem()
+
++clearCart()
+
+}
+
+class CartItem{
+
++quantity : int
+
++subtotal : decimal
+
+}
+
+Customer "1" *-- "1" ShoppingCart
+
+ShoppingCart "1" *-- "*" CartItem
+
+CartItem "*" --> "1" Product
+
+%% =====================================================
+%% ORDER
+%% =====================================================
+
+class Order{
+
++orderId : int
+
++orderDate : Date
+
++status : string
+
++totalAmount : decimal
+
++shippingName : string
+
++shippingPhone : string
+
++shippingAddress : string
+
++placeOrder()
+
++trackOrder()
+
+}
+
+class OrderItem{
+
++OrderId : int
+
++price : decimal
+
+}
+
+Customer "1" --> "*" Order
+
+Order "1" *-- "*" OrderItem
+
+OrderItem "*" --> "1" Product
+
+%% =====================================================
+%% PAYMENT
+%% =====================================================
+
+class Payment{
+
++paymentId : int
+
++paymentMethod : string
+
++amount : decimal
+
++paymentStatus : string
+
++paymentDate : Date
+
++transactionId : string
+
++processPayment()
+
+}
+
+Order "1" --> "1" Payment
+
+%% =====================================================
+%% WARRANTY
+%% =====================================================
+
+class Warranty{
+
++warrantyId : int
+
++provider : string
+
++serialNumber : string
+
++warrantyEndDate : Date
+
++status : string
+
+}
+
+class WarrantyClaim{
+
++claimId : int
+
++claimDate : Date
+
++description : string
+
++claimStatus : string
+
++adminRemark : string
+
++submittedAt : Date
+
++completedAt : Date
+
+}
+
+OrderItem "1" --> "0..1" Warranty
+
+Warranty "1" --> "*" WarrantyClaim
+
+Customer "1" --> "*" WarrantyClaim
+
+%% =====================================================
+%% DASHBOARD
+%% =====================================================
+
+class DashboardService{
+
++viewSales()
+
++viewRevenue()
+
++viewOrders()
+
++viewCustomers()
+
++viewProducts()
+
++viewWarrantyClaims()
+
+}
+
+Admin ..> DashboardService
+
+%% =================================
+%% ROLE
+%% =================================
+
+class Role{
+
++roleId : int
++roleName : string
+
+}
+
+SuperAdmin --> Role
+
