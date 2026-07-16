@@ -105,6 +105,225 @@
 3. พัฒนาส่วนหลังบ้านด้วย Node.js และสร้างฐานข้อมูล MySQL เพื่อใช้จัดการและเชื่อมต่อข้อมูลสินค้าและคำสั่งซื้อ
 4. ทำการทดสอบระบบแบบ Manual Testing และทำ UAT ตรวจสอบความถูกต้อง พร้อมจัดทำสรุปเพื่อนำเสนอผลงาน
 
+## Class Diagram
+mermaid ```
+classDiagram
+
+%% =====================================================
+%% USER MANAGEMENT
+%% =====================================================
+
+class User{
++userId : int
++firstName : string
++lastName : string
++email : string
++passwordHash : string
++phone : string
++status : string
+
++register()
++login()
++logout()
++updateProfile()
+}
+
+class Customer{
++searchProducts()
++filterProducts()
++compareProducts()
++viewProductDetail()
++manageShoppingCart()
++manageAddress()
++processOrder()
++viewOrders()
+}
+
+class Admin{
++manageProducts()
++manageCategories()
++manageOrders()
++viewCustomerInformation()
++viewDashboard()
+}
+
+class SuperAdmin{
++manageAdminAccounts()
++manageRoles()
++manageSystemSettings()
++viewSystemLogs()
++manageSpecTemplates()
+}
+
+User <|-- Customer
+User <|-- Admin
+Admin <|-- SuperAdmin
+
+%% =====================================================
+%% ROLE
+%% =====================================================
+
+class Role{
++roleId : int
++roleName : string
+}
+
+User "*" --> "1" Role
+
+%% =====================================================
+%% ADDRESS
+%% =====================================================
+
+class Address{
++addressId : int
++recipientName : string
++phone : string
++addressLine : string
++subdistrict : string
++district : string
++province : string
++postalCode : string
++isDefault : boolean
+}
+
+User "1" -- "*" Address
+
+%% =====================================================
+%% PRODUCT
+%% =====================================================
+
+class Product{
++productId : int
++sku : string
++name : string
++description : string
++price : decimal
++stock : int
++status : string
++imageURL : string
+}
+
+class Category{
++categoryId : int
++categoryName : string
+}
+
+class Brand{
++brandId : int
++brandName : string
+}
+
+Category "1" --> "*" Product
+Brand "1" --> "*" Product
+
+%% =====================================================
+%% SPEC TEMPLATE (SuperAdmin กำหนดล่วงหน้าต่อ Category)
+%% =====================================================
+
+class SpecTemplate{
++templateId : int
++categoryId : int
++specName : string
+}
+
+Category "1" --> "*" SpecTemplate
+
+%% =====================================================
+%% PRODUCT SPEC (รองรับ Compare Products - Dynamic Spec
+%% ค่า specName เลือกมาจาก SpecTemplate ของ Category สินค้านั้น)
+%% =====================================================
+
+class ProductSpec{
++specId : int
++productId : int
++specName : string
++specValue : string
+}
+
+Product "1" --> "*" ProductSpec
+
+%% =====================================================
+%% SHOPPING CART
+%% =====================================================
+
+class ShoppingCart{
++cartId : int
++totalPrice : decimal
++addItem()
++updateItem()
++removeItem()
++clearCart()
+}
+
+class CartItem{
++quantity : int
++subtotal : decimal
+}
+
+Customer "1" *-- "1" ShoppingCart
+ShoppingCart "1" *-- "*" CartItem
+CartItem "*" --> "1" Product
+
+%% =====================================================
+%% ORDER
+%% =====================================================
+
+class Order{
++orderId : int
++orderDate : Date
++status : string
++totalAmount : decimal
++shippingName : string
++shippingPhone : string
++shippingAddress : string
++placeOrder()
++trackOrder()
+}
+
+class OrderItem{
++orderItemId : int
++quantity : int
++unitPrice : decimal
++subtotal : decimal
+}
+
+Customer "1" --> "*" Order
+Order "1" *-- "*" OrderItem
+OrderItem "*" --> "1" Product
+
+%% =====================================================
+%% PAYMENT
+%% =====================================================
+
+class Payment{
++paymentId : int
++paymentMethod : string
++amount : decimal
++paymentStatus : string
++paymentDate : Date
++transactionId : string
++processPayment()
+}
+
+Order "1" --> "1" Payment
+
+%% =====================================================
+%% DASHBOARD
+%% =====================================================
+
+class DashboardService{
++viewSales()
++viewRevenue()
++viewOrders()
++viewCustomers()
++viewProducts()
+}
+
+Admin ..> DashboardService
+
+SuperAdmin --> Role
+```
+
 ## Screenshot SourceTree 
 
 ![Logo](/Image/SourceTree.png)
