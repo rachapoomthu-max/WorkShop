@@ -1,9 +1,4 @@
 classDiagram
-
-%% =====================================================
-%% USER MANAGEMENT
-%% =====================================================
-
 class User{
 +userId : int
 +firstName : string
@@ -12,82 +7,53 @@ class User{
 +passwordHash : string
 +phone : string
 +status : string
-
 +register()
 +login()
 +logout()
 +updateProfile()
 }
-
 class Customer{
-+browseProducts()
 +searchProducts()
 +filterProducts()
++compareProducts()
 +viewProductDetail()
-
 +manageShoppingCart()
-
-+checkout()
-
++processOrder()
 +viewOrders()
-
-+viewWarranty()
-
-+submitWarrantyClaim()
 }
-
 class Admin{
 +manageProducts()
 +manageCategories()
 +manageOrders()
 +viewCustomerInformation()
-+manageWarrantyClaims()
 +viewDashboard()
 }
-
 class SuperAdmin{
 +manageAdminAccounts()
 +manageRoles()
 +manageSystemSettings()
 +viewSystemLogs()
 }
-
 User <|-- Customer
 User <|-- Admin
 Admin <|-- SuperAdmin
-
-%% =====================================================
-%% ROLE
-%% =====================================================
-
 class Role{
 +roleId : int
 +roleName : string
 }
-
 User "*" --> "1" Role
-
-%% =====================================================
-%% ADDRESS
-%% =====================================================
-
 class Address{
 +addressId : int
 +recipientName : string
 +phone : string
 +addressLine : string
++subdistrict : string
 +district : string
 +province : string
 +postalCode : string
 +isDefault : boolean
 }
-
 User "1" -- "*" Address
-
-%% =====================================================
-%% PRODUCT
-%% =====================================================
-
 class Product{
 +productId : int
 +sku : string
@@ -98,191 +64,74 @@ class Product{
 +status : string
 +imageURL : string
 }
-
 class Category{
 +categoryId : int
 +categoryName : string
 }
-
 class Brand{
 +brandId : int
 +brandName : string
 }
-
-Category "1" --> "*" Product
-Brand "1" --> "*" Product
-
-%% =====================================================
-%% SHOPPING CART
-%% =====================================================
-
+Category "1" --> "" Product
+Brand "1" --> "" Product
+class ProductSpec{
++specId : int
++productId : int
++specName : string
++specValue : string
+}
+Product "1" --> "*" ProductSpec
 class ShoppingCart{
-
 +cartId : int
-
 +totalPrice : decimal
-
 +addItem()
-
 +updateItem()
-
 +removeItem()
-
 +clearCart()
-
 }
-
 class CartItem{
-
 +quantity : int
-
 +subtotal : decimal
-
 }
-
-Customer "1" *-- "1" ShoppingCart
-
-ShoppingCart "1" *-- "*" CartItem
-
-CartItem "*" --> "1" Product
-
-%% =====================================================
-%% ORDER
-%% =====================================================
-
+Customer "1" -- "1" ShoppingCart
+ShoppingCart "1" -- "" CartItem
+CartItem "" --> "1" Product
 class Order{
-
 +orderId : int
-
 +orderDate : Date
-
 +status : string
-
 +totalAmount : decimal
-
 +shippingName : string
-
 +shippingPhone : string
-
 +shippingAddress : string
-
 +placeOrder()
-
 +trackOrder()
-
 }
-
 class OrderItem{
-
++orderItemId : int
 +quantity : int
-
-+price : decimal
-
++unitPrice : decimal
++subtotal : decimal
 }
-
-Customer "1" --> "*" Order
-
-Order "1" *-- "*" OrderItem
-
-OrderItem "*" --> "1" Product
-
-%% =====================================================
-%% PAYMENT
-%% =====================================================
-
+Customer "1" --> "" Order
+Order "1" -- "" OrderItem
+OrderItem "" --> "1" Product
 class Payment{
-
 +paymentId : int
-
 +paymentMethod : string
-
 +amount : decimal
-
 +paymentStatus : string
-
 +paymentDate : Date
-
 +transactionId : string
-
 +processPayment()
-
 }
-
 Order "1" --> "1" Payment
-
-%% =====================================================
-%% WARRANTY
-%% =====================================================
-
-class Warranty{
-
-+warrantyId : int
-
-+provider : string
-
-+serialNumber : string
-
-+warrantyEndDate : Date
-
-+status : string
-
-}
-
-class WarrantyClaim{
-
-+claimId : int
-
-+claimDate : Date
-
-+description : string
-
-+claimStatus : string
-
-+adminRemark : string
-
-+submittedAt : Date
-
-+completedAt : Date
-
-}
-
-OrderItem "1" --> "0..1" Warranty
-
-Warranty "1" --> "*" WarrantyClaim
-
-Customer "1" --> "*" WarrantyClaim
-
-%% =====================================================
-%% DASHBOARD
-%% =====================================================
-
 class DashboardService{
-
 +viewSales()
-
 +viewRevenue()
-
 +viewOrders()
-
 +viewCustomers()
-
 +viewProducts()
-
-+viewWarrantyClaims()
-
 }
-
 Admin ..> DashboardService
-
-%% =================================
-%% ROLE
-%% =================================
-
-class Role{
-
-+roleId : int
-+roleName : string
-
-}
-
 SuperAdmin --> Role
