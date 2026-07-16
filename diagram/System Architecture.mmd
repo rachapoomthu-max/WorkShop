@@ -1,55 +1,65 @@
-flowchart TB
-
-    subgraph Users
-        Customer["Customer"]
-        Admin["Store Administrator"]
-        SuperAdmin["System Administrator"]
-    end
-
-    subgraph Presentation_Layer["Presentation Layer"]
-        React["React Web Application<br/>React Router"]
-    end
-
-    subgraph Application_Layer["Application Layer"]
-        Express["Node.js + Express REST API"]
-
-        Auth["Authentication"]
-        Product["Product Management"]
-        Search["Search Module"]
-        Cart["Shopping Cart"]
-        Order["Order Management"]
-        Payment["Mock Payment"]
-        Warranty["Warranty Management"]
-        AdminModule["Administration Module"]
-    end
-
-    subgraph Data_Layer["Data Layer"]
-        Upload["Local Image Storage"]
-        DB["MySQL Database"]
-    end
-
-    Customer --> React
-    Admin --> React
-    SuperAdmin --> React
-
-    React --> Express
-
-    Express --> Auth
+diff    Express --> Auth
     Express --> Product
     Express --> Search
     Express --> Cart
     Express --> Order
     Express --> Payment
-    Express --> Warranty
+-   Express --> Warranty
++   Express --> Compare
     Express --> AdminModule
-
-    Product --> Upload
-
+diff    Product --> Upload
     Auth --> DB
     Product --> DB
     Search --> DB
     Cart --> DB
     Order --> DB
     Payment --> DB
-    Warranty --> DB
+-   Warranty --> DB
++   Compare --> DB
+    AdminModule --> DB
+ไฟล์เต็มหลังแก้
+flowchart TB
+    subgraph Users
+        Customer["Customer"]
+        Admin["Store Administrator"]
+        SuperAdmin["System Administrator"]
+    end
+    subgraph Presentation_Layer["Presentation Layer"]
+        React["React Web Application<br/>React Router"]
+    end
+    subgraph Application_Layer["Application Layer"]
+        Express["Node.js + Express REST API"]
+        Auth["Authentication"]
+        Product["Product Management"]
+        Search["Search Module"]
+        Cart["Shopping Cart"]
+        Order["Order Management"]
+        Payment["Mock Payment"]
+        Compare["Product Comparison Module"]
+        AdminModule["Administration Module"]
+    end
+    subgraph Data_Layer["Data Layer"]
+        Upload["Local Image Storage"]
+        DB["MySQL Database"]
+    end
+    Customer --> React
+    Admin --> React
+    SuperAdmin --> React
+    React --> Express
+    Express --> Auth
+    Express --> Product
+    Express --> Search
+    Express --> Cart
+    Express --> Order
+    Express --> Payment
+    Express --> Compare
+    Express --> AdminModule
+    Product --> Upload
+    Auth --> DB
+    Product --> DB
+    Search --> DB
+    Cart --> DB
+    Order --> DB
+    Payment --> DB
+    Compare --> DB
     AdminModule --> DB
