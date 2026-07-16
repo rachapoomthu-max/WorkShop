@@ -32,15 +32,12 @@
 - สามารถจัดการสินค้าในตะกร้าได้
 - สามารถสั่งซื้อสินค้าและชำระเงินผ่านระบบจำลอง (Simulation / Mock Payment) ได้
 - สามารถติดตามสถานะคำสั่งซื้อและตรวจสอบประวัติการสั่งซื้อของตนเองได้
-- สามารถตรวจสอบข้อมูลการรับประกันสินค้าที่ซื้อได้
-- สามารถส่งคำขอเคลมประกันและติดตามสถานะการเคลมได้
 
 **ผู้ดูแลระบบ (Admin)**
 - สามารถจัดการข้อมูลสินค้า 
 - สามารถจัดการข้อมูลหมวดหมู่สินค้าได้
 - สามารถจัดการคำสั่งซื้อของลูกค้า และอัปเดตสถานะคำสั่งซื้อได้
 - สามารถดูรายงานและ Dashboard สรุปข้อมูลเบื้องต้นของระบบได้
-- สามารถอนุมัติ ปฏิเสธ หรืออัปเดตสถานะการเคลมประกันได้
 
 **ผู้จัดการระบบ (Super Admin)**
 - สามารถจัดการข้อมูลสมาชิกทั้งหมด
@@ -90,6 +87,10 @@
 **ประเภทการทดสอบ**
 - Manual Testing
 - User Acceptance Testing (UAT)
+ไม่วัดผลการใช้เครื่องมือทดสอบอัตโนมัติหรือมีการจัดทํารายงานผลการทดสอบอย่างเป็นทางการ
+การทดสอบการทํางานของระบบด้วยตนเองตามฟังก์ชันทีพัฒนา พร้อมสาธิตการทํางานต่อผู ้สอน 
+โดยอธิบายขั้นตอนการทดสอบผลลัพธ์ทีคาดหวังและผลลัพธ์ทีเกิดขึ้นจริง เพือแสดงให้เห็นว่าระบบทํางาน
+ได้ถูกต้องตามวัตถุประสงค์ที่กําหนดไว้
   
 ## ผลลัพท์ที่คาดว่าจะได้รับ
 
@@ -108,11 +109,6 @@
 ## Class Diagram
 ``` mermaid
 classDiagram
-
-%% =====================================================
-%% USER MANAGEMENT
-%% =====================================================
-
 class User{
 +userId : int
 +firstName : string
@@ -121,24 +117,20 @@ class User{
 +passwordHash : string
 +phone : string
 +status : string
-
 +register()
 +login()
 +logout()
 +updateProfile()
 }
-
 class Customer{
 +searchProducts()
 +filterProducts()
-+compareProducts()
 +viewProductDetail()
 +manageShoppingCart()
 +manageAddress()
 +processOrder()
 +viewOrders()
 }
-
 class Admin{
 +manageProducts()
 +manageCategories()
@@ -146,34 +138,20 @@ class Admin{
 +viewCustomerInformation()
 +viewDashboard()
 }
-
 class SuperAdmin{
 +manageAdminAccounts()
 +manageRoles()
 +manageSystemSettings()
 +viewSystemLogs()
-+manageSpecTemplates()
 }
-
 User <|-- Customer
 User <|-- Admin
 Admin <|-- SuperAdmin
-
-%% =====================================================
-%% ROLE
-%% =====================================================
-
 class Role{
 +roleId : int
 +roleName : string
 }
-
 User "*" --> "1" Role
-
-%% =====================================================
-%% ADDRESS
-%% =====================================================
-
 class Address{
 +addressId : int
 +recipientName : string
@@ -185,13 +163,7 @@ class Address{
 +postalCode : string
 +isDefault : boolean
 }
-
 User "1" -- "*" Address
-
-%% =====================================================
-%% PRODUCT
-%% =====================================================
-
 class Product{
 +productId : int
 +sku : string
@@ -202,50 +174,16 @@ class Product{
 +status : string
 +imageURL : string
 }
-
 class Category{
 +categoryId : int
 +categoryName : string
 }
-
 class Brand{
 +brandId : int
 +brandName : string
 }
-
-Category "1" --> "*" Product
-Brand "1" --> "*" Product
-
-%% =====================================================
-%% SPEC TEMPLATE (SuperAdmin กำหนดล่วงหน้าต่อ Category)
-%% =====================================================
-
-class SpecTemplate{
-+templateId : int
-+categoryId : int
-+specName : string
-}
-
-Category "1" --> "*" SpecTemplate
-
-%% =====================================================
-%% PRODUCT SPEC (รองรับ Compare Products - Dynamic Spec
-%% ค่า specName เลือกมาจาก SpecTemplate ของ Category สินค้านั้น)
-%% =====================================================
-
-class ProductSpec{
-+specId : int
-+productId : int
-+specName : string
-+specValue : string
-}
-
-Product "1" --> "*" ProductSpec
-
-%% =====================================================
-%% SHOPPING CART
-%% =====================================================
-
+Category "1" --> "" Product
+Brand "1" --> "" Product
 class ShoppingCart{
 +cartId : int
 +totalPrice : decimal
@@ -254,20 +192,13 @@ class ShoppingCart{
 +removeItem()
 +clearCart()
 }
-
 class CartItem{
 +quantity : int
 +subtotal : decimal
 }
-
-Customer "1" *-- "1" ShoppingCart
-ShoppingCart "1" *-- "*" CartItem
-CartItem "*" --> "1" Product
-
-%% =====================================================
-%% ORDER
-%% =====================================================
-
+Customer "1" -- "1" ShoppingCart
+ShoppingCart "1" -- "" CartItem
+CartItem "" --> "1" Product
 class Order{
 +orderId : int
 +orderDate : Date
@@ -279,22 +210,15 @@ class Order{
 +placeOrder()
 +trackOrder()
 }
-
 class OrderItem{
 +orderItemId : int
 +quantity : int
 +unitPrice : decimal
 +subtotal : decimal
 }
-
-Customer "1" --> "*" Order
-Order "1" *-- "*" OrderItem
-OrderItem "*" --> "1" Product
-
-%% =====================================================
-%% PAYMENT
-%% =====================================================
-
+Customer "1" --> "" Order
+Order "1" -- "" OrderItem
+OrderItem "" --> "1" Product
 class Payment{
 +paymentId : int
 +paymentMethod : string
@@ -304,13 +228,7 @@ class Payment{
 +transactionId : string
 +processPayment()
 }
-
 Order "1" --> "1" Payment
-
-%% =====================================================
-%% DASHBOARD
-%% =====================================================
-
 class DashboardService{
 +viewSales()
 +viewRevenue()
@@ -318,9 +236,7 @@ class DashboardService{
 +viewCustomers()
 +viewProducts()
 }
-
 Admin ..> DashboardService
-
 SuperAdmin --> Role
 ```
 
