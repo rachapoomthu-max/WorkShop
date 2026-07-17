@@ -109,6 +109,7 @@
 4. ทำการทดสอบระบบแบบ Manual Testing และทำ UAT ตรวจสอบความถูกต้อง พร้อมจัดทำสรุปเพื่อนำเสนอผลงาน
 
 ## System Architecture
+
 <div class="mermaid">
 flowchart TB
 subgraph Users
@@ -160,7 +161,7 @@ AdminModule --> DB
 
 
 ## Class Diagram
-``` mermaid
+<div class="mermaid">
 classDiagram
 class User{
 +userId : int
@@ -291,7 +292,11 @@ class DashboardService{
 }
 Admin ..> DashboardService
 SuperAdmin --> Role
-```
+</div>
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+  mermaid.initialize({ startOnLoad: true });
+</script>
 
 ## Screenshot SourceTree 
 
