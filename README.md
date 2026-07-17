@@ -106,6 +106,53 @@
 3. พัฒนาส่วนหลังบ้านด้วย Node.js และสร้างฐานข้อมูล MySQL เพื่อใช้จัดการและเชื่อมต่อข้อมูลสินค้าและคำสั่งซื้อ
 4. ทำการทดสอบระบบแบบ Manual Testing และทำ UAT ตรวจสอบความถูกต้อง พร้อมจัดทำสรุปเพื่อนำเสนอผลงาน
 
+## System Architecture
+``` mermaid
+flowchart TB
+subgraph Users
+Customer["Customer"]
+Admin["Store Administrator"]
+SuperAdmin["System Administrator"]
+end
+subgraph Presentation_Layer["Presentation Layer"]
+React["React Web Application<br/>React Router"]
+end
+subgraph Application_Layer["Application Layer"]
+Express["Node.js + Express REST API"]
+Auth["Authentication"]
+Product["Product Management"]
+Search["Search Module"]
+Cart["Shopping Cart"]
+Order["Order Management"]
+Payment["Mock Payment"]
+AdminModule["Administration Module"]
+end
+subgraph Data_Layer["Data Layer"]
+Upload["Local Image Storage"]
+DB["MySQL Database"]
+end
+Customer --> React
+Admin --> React
+SuperAdmin --> React
+React --> Express
+Express --> Auth
+Express --> Product
+Express --> Search
+Express --> Cart
+Express --> Order
+Express --> Payment
+Express --> AdminModule
+Product --> Upload
+Auth --> DB
+Product --> DB
+Search --> DB
+Cart --> DB
+Order --> DB
+Payment --> DB
+AdminModule --> DB
+```
+
+
 ## Class Diagram
 ``` mermaid
 classDiagram
