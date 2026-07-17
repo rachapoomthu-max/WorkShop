@@ -226,6 +226,7 @@
       <div class="stat"><div class="num" id="stat-total">0</div><div class="lbl">Total Cases</div></div>
       <div class="stat"><div class="num" id="stat-pass" style="color:var(--pass)">0</div><div class="lbl">Passed</div></div>
       <div class="stat"><div class="num" id="stat-fail" style="color:var(--fail)">0</div><div class="lbl">Failed</div></div>
+      <div class="stat"><div class="num" id="stat-pct" style="color:var(--moss-d)">0%</div><div class="lbl">% ผ่าน</div></div>
     </div>
   </header>
 
@@ -849,9 +850,11 @@ function updateStats(){
   document.getElementById('stat-total').textContent = total;
   document.getElementById('stat-pass').textContent = pass;
   document.getElementById('stat-fail').textContent = fail;
+  const passPct = total ? Math.round((pass/total)*100) : 0;
+  document.getElementById('stat-pct').textContent = passPct + '%';
   const pct = total ? Math.round((tested/total)*100) : 0;
   document.getElementById('progress-fill').style.width = pct + '%';
-  document.getElementById('progress-text').textContent = `${tested} / ${total} ทดสอบแล้ว (${pct}%)`;
+  document.getElementById('progress-text').textContent = `${tested} / ${total} ทดสอบแล้ว (${pct}%) · ผ่าน ${pass}/${total} (${passPct}%)`;
 }
 
 function sevRank(s){ return {Critical:0, High:1, Medium:2, Low:3}[s] ?? 9; }
