@@ -109,7 +109,7 @@
 4. ทำการทดสอบระบบแบบ Manual Testing และทำ UAT ตรวจสอบความถูกต้อง พร้อมจัดทำสรุปเพื่อนำเสนอผลงาน
 
 ## System Architecture
-``` mermaid
+<div class="mermaid">
 flowchart TB
 subgraph Users
 Customer["Customer"]
@@ -152,7 +152,11 @@ Cart --> DB
 Order --> DB
 Payment --> DB
 AdminModule --> DB
-```
+</div>
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+  mermaid.initialize({ startOnLoad: true });
+</script>
 
 
 ## Class Diagram
