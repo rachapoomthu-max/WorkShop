@@ -32,15 +32,12 @@
 - สามารถจัดการสินค้าในตะกร้าได้
 - สามารถสั่งซื้อสินค้าและชำระเงินผ่านระบบจำลอง (Simulation / Mock Payment) ได้
 - สามารถติดตามสถานะคำสั่งซื้อและตรวจสอบประวัติการสั่งซื้อของตนเองได้
-- สามารถตรวจสอบข้อมูลการรับประกันสินค้าที่ซื้อได้
-- สามารถส่งคำขอเคลมประกันและติดตามสถานะการเคลมได้
 
 **ผู้ดูแลระบบ (Admin)**
 - สามารถจัดการข้อมูลสินค้า 
 - สามารถจัดการข้อมูลหมวดหมู่สินค้าได้
 - สามารถจัดการคำสั่งซื้อของลูกค้า และอัปเดตสถานะคำสั่งซื้อได้
 - สามารถดูรายงานและ Dashboard สรุปข้อมูลเบื้องต้นของระบบได้
-- สามารถอนุมัติ ปฏิเสธ หรืออัปเดตสถานะการเคลมประกันได้
 
 **ผู้จัดการระบบ (Super Admin)**
 - สามารถจัดการข้อมูลสมาชิกทั้งหมด
@@ -92,7 +89,11 @@
 - User Acceptance Testing (UAT)
 
 [กระบวนการทดสอบ UAT](uat_checklist.html)
-  
+ไม่วัดผลการใช้เครื่องมือทดสอบอัตโนมัติหรือมีการจัดทํารายงานผลการทดสอบอย่างเป็นทางการ
+การทดสอบการทํางานของระบบด้วยตนเองตามฟังก์ชันทีพัฒนา พร้อมสาธิตการทํางานต่อผู ้สอน 
+โดยอธิบายขั้นตอนการทดสอบผลลัพธ์ทีคาดหวังและผลลัพธ์ทีเกิดขึ้นจริง เพือแสดงให้เห็นว่าระบบทํางาน
+ได้ถูกต้องตามวัตถุประสงค์ที่กําหนดไว้  
+
 ## ผลลัพท์ที่คาดว่าจะได้รับ
 
 1. ระบบสามารถแสดงรายการสินค้าและราคาอุปกรณ์คอมพิวเตอร์แยกตามหมวดหมู่ได้อย่างถูกต้อง
@@ -106,6 +107,187 @@
 2. เขียนโค้ดส่วนหน้าบ้านด้วย React เพื่อสร้างหน้าจอแสดงสินค้า หมวดหมู่ ตะกร้าสินค้า และหน้าจำลองสั่งซื้อ
 3. พัฒนาส่วนหลังบ้านด้วย Node.js และสร้างฐานข้อมูล MySQL เพื่อใช้จัดการและเชื่อมต่อข้อมูลสินค้าและคำสั่งซื้อ
 4. ทำการทดสอบระบบแบบ Manual Testing และทำ UAT ตรวจสอบความถูกต้อง พร้อมจัดทำสรุปเพื่อนำเสนอผลงาน
+
+## System Architecture
+``` mermaid
+flowchart TB
+subgraph Users
+Customer["Customer"]
+Admin["Store Administrator"]
+SuperAdmin["System Administrator"]
+end
+subgraph Presentation_Layer["Presentation Layer"]
+React["React Web Application<br/>React Router"]
+end
+subgraph Application_Layer["Application Layer"]
+Express["Node.js + Express REST API"]
+Auth["Authentication"]
+Product["Product Management"]
+Search["Search Module"]
+Cart["Shopping Cart"]
+Order["Order Management"]
+Payment["Mock Payment"]
+AdminModule["Administration Module"]
+end
+subgraph Data_Layer["Data Layer"]
+Upload["Local Image Storage"]
+DB["MySQL Database"]
+end
+Customer --> React
+Admin --> React
+SuperAdmin --> React
+React --> Express
+Express --> Auth
+Express --> Product
+Express --> Search
+Express --> Cart
+Express --> Order
+Express --> Payment
+Express --> AdminModule
+Product --> Upload
+Auth --> DB
+Product --> DB
+Search --> DB
+Cart --> DB
+Order --> DB
+Payment --> DB
+AdminModule --> DB
+```
+
+
+## Class Diagram
+``` mermaid
+classDiagram
+class User{
++userId : int
++firstName : string
++lastName : string
++email : string
++passwordHash : string
++phone : string
++status : string
++register()
++login()
++logout()
++updateProfile()
+}
+class Customer{
++searchProducts()
++filterProducts()
++viewProductDetail()
++manageShoppingCart()
++manageAddress()
++processOrder()
++viewOrders()
+}
+class Admin{
++manageProducts()
++manageCategories()
++manageOrders()
++viewCustomerInformation()
++viewDashboard()
+}
+class SuperAdmin{
++manageAdminAccounts()
++manageRoles()
++manageSystemSettings()
++viewSystemLogs()
+}
+User <|-- Customer
+User <|-- Admin
+Admin <|-- SuperAdmin
+class Role{
++roleId : int
++roleName : string
+}
+User "*" --> "1" Role
+class Address{
++addressId : int
++recipientName : string
++phone : string
++addressLine : string
++subdistrict : string
++district : string
++province : string
++postalCode : string
++isDefault : boolean
+}
+User "1" -- "*" Address
+class Product{
++productId : int
++sku : string
++name : string
++description : string
++price : decimal
++stock : int
++status : string
++imageURL : string
+}
+class Category{
++categoryId : int
++categoryName : string
+}
+class Brand{
++brandId : int
++brandName : string
+}
+Category "1" --> "" Product
+Brand "1" --> "" Product
+class ShoppingCart{
++cartId : int
++totalPrice : decimal
++addItem()
++updateItem()
++removeItem()
++clearCart()
+}
+class CartItem{
++quantity : int
++subtotal : decimal
+}
+Customer "1" -- "1" ShoppingCart
+ShoppingCart "1" -- "" CartItem
+CartItem "" --> "1" Product
+class Order{
++orderId : int
++orderDate : Date
++status : string
++totalAmount : decimal
++shippingName : string
++shippingPhone : string
++shippingAddress : string
++placeOrder()
++trackOrder()
+}
+class OrderItem{
++orderItemId : int
++quantity : int
++unitPrice : decimal
++subtotal : decimal
+}
+Customer "1" --> "" Order
+Order "1" -- "" OrderItem
+OrderItem "" --> "1" Product
+class Payment{
++paymentId : int
++paymentMethod : string
++amount : decimal
++paymentStatus : string
++paymentDate : Date
++transactionId : string
++processPayment()
+}
+Order "1" --> "1" Payment
+class DashboardService{
++viewSales()
++viewRevenue()
++viewOrders()
++viewCustomers()
++viewProducts()
+}
+Admin ..> DashboardService
+SuperAdmin --> Role
+```
 
 ## Screenshot SourceTree 
 
