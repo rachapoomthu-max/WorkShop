@@ -90,6 +90,8 @@
 **ประเภทการทดสอบ**
 - Manual Testing
 - User Acceptance Testing (UAT)
+
+[กระบวนการทดสอบ UAT](uat_checklist.html)
   
 ## ผลลัพท์ที่คาดว่าจะได้รับ
 

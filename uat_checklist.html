@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UAT Checklist — ระบบร้านค้า & ประกันสินค้า</title>
+<style>
+  :root{
+    --ink:#1c2b24;
+    --paper:#f6f3ea;
+    --panel:#ffffff;
+    --line:#dcd6c4;
+    --moss:#3f6b4f;
+    --moss-d:#2c4d38;
+    --clay:#b5562f;
+    --amber:#c8912b;
+    --muted:#7c7a6c;
+    --pass:#3f6b4f;
+    --fail:#b5562f;
+    --pending:#c8912b;
+    --radius:10px;
+    font-family: 'Georgia', serif;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:
+      radial-gradient(circle at 15% 0%, #eef0e4 0%, var(--paper) 45%);
+    color:var(--ink);
+    font-family: 'Segoe UI', 'Noto Sans Thai', Tahoma, sans-serif;
+    padding:32px 18px 80px;
+  }
+  .wrap{max-width:1080px;margin:0 auto;}
+
+  header.top{
+    display:flex; justify-content:space-between; align-items:flex-end; gap:24px;
+    border-bottom:3px solid var(--ink);
+    padding-bottom:18px; margin-bottom:22px; flex-wrap:wrap;
+  }
+  .eyebrow{
+    font-family:'Courier New', monospace; letter-spacing:.18em; text-transform:uppercase;
+    font-size:11px; color:var(--clay); margin:0 0 6px;
+  }
+  h1{
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size:34px; margin:0; line-height:1.15; letter-spacing:-.01em;
+  }
+  .sub{color:var(--muted); font-size:13.5px; margin-top:8px; max-width:560px;}
+
+  .stat-block{display:flex; gap:22px; flex-wrap:wrap;}
+  .stat{text-align:right;}
+  .stat .num{font-size:30px; font-weight:700; font-family:Georgia,serif;}
+  .stat .lbl{font-size:10.5px; text-transform:uppercase; letter-spacing:.12em; color:var(--muted);}
+
+  .progress-row{
+    display:flex; align-items:center; gap:14px; margin:18px 0 26px;
+  }
+  .progress-track{
+    flex:1; height:10px; background:var(--line); border-radius:6px; overflow:hidden;
+  }
+  .progress-fill{
+    height:100%; background:linear-gradient(90deg, var(--moss), var(--amber));
+    width:0%; transition:width .4s ease;
+  }
+  .progress-text{font-size:12.5px; color:var(--muted); white-space:nowrap; font-variant-numeric:tabular-nums;}
+
+  .toolbar{
+    display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-bottom:20px;
+  }
+  .filter-btn{
+    border:1px solid var(--line); background:var(--panel); color:var(--ink);
+    padding:7px 14px; border-radius:20px; font-size:12.5px; cursor:pointer;
+    transition:.15s; font-family: 'Segoe UI', sans-serif;
+  }
+  .filter-btn:hover{border-color:var(--moss);}
+  .filter-btn.active{background:var(--moss); border-color:var(--moss); color:#fff;}
+  .spacer{flex:1;}
+  .icon-btn{
+    border:1px solid var(--ink); background:var(--ink); color:var(--paper);
+    padding:8px 16px; border-radius:20px; font-size:12.5px; cursor:pointer;
+  }
+  .icon-btn.ghost{background:transparent; color:var(--ink);}
+  .icon-btn:hover{opacity:.85;}
+
+  .module-group{margin-bottom:30px;}
+  .module-head{
+    display:flex; align-items:baseline; gap:12px; margin-bottom:10px;
+    border-bottom:1px solid var(--line); padding-bottom:8px;
+  }
+  .module-tag{
+    font-family:'Courier New', monospace; font-size:11px; color:#fff;
+    background:var(--moss-d); padding:3px 9px; border-radius:4px; letter-spacing:.05em;
+  }
+  .module-title{font-size:18px; font-weight:700; margin:0;}
+  .module-count{font-size:12px; color:var(--muted); margin-left:auto;}
+
+  .case{
+    background:var(--panel); border:1px solid var(--line); border-radius:var(--radius);
+    padding:14px 16px; margin-bottom:10px;
+    display:grid; grid-template-columns:26px 1fr 150px; gap:14px; align-items:start;
+  }
+  .case.done{opacity:.6;}
+  .case input[type=checkbox]{
+    width:20px; height:20px; margin-top:2px; accent-color:var(--moss); cursor:pointer;
+  }
+  .case-id{font-family:'Courier New', monospace; font-size:11px; color:var(--clay); font-weight:700;}
+  .case-title{font-size:14.5px; font-weight:700; margin:2px 0 6px;}
+  .case-steps{font-size:12.8px; color:#4a4a40; margin:0 0 6px; line-height:1.55; white-space:pre-line;}
+  .case-expect{
+    font-size:12.5px; background:#f1f0e6; border-left:3px solid var(--moss);
+    padding:6px 10px; border-radius:0 6px 6px 0; color:#33402f;
+  }
+  .prio{
+    display:inline-block; font-size:10px; text-transform:uppercase; letter-spacing:.06em;
+    padding:2px 7px; border-radius:10px; margin-left:8px; vertical-align:middle;
+  }
+  .prio.high{background:#f5dfd6; color:var(--clay);}
+  .prio.med{background:#f3ead0; color:var(--amber);}
+  .prio.low{background:#e4e9e2; color:var(--moss-d);}
+
+  .status-col{display:flex; flex-direction:column; gap:6px;}
+  select.status-select{
+    font-size:12px; padding:6px 8px; border-radius:6px; border:1px solid var(--line);
+    background:#fff; cursor:pointer; font-family:'Segoe UI', sans-serif;
+  }
+  select.status-select.pass{border-color:var(--pass); color:var(--pass); font-weight:700;}
+  select.status-select.fail{border-color:var(--fail); color:var(--fail); font-weight:700;}
+  select.status-select.pending{border-color:var(--pending); color:var(--pending);}
+  textarea.note{
+    font-size:11.5px; border:1px solid var(--line); border-radius:6px; padding:5px 7px;
+    resize:vertical; min-height:34px; font-family:'Segoe UI', sans-serif;
+  }
+
+  .issue-fields{
+    display:flex; gap:8px; margin-top:6px; flex-wrap:wrap;
+  }
+  .issue-fields select{
+    font-size:11.5px; padding:5px 7px; border-radius:6px; border:1px solid var(--line);
+    background:#fdf6f2; font-family:'Segoe UI', sans-serif; color:var(--clay);
+  }
+
+  .issue-section{
+    margin-top:44px; padding-top:8px;
+  }
+  .issue-section-head{
+    display:flex; align-items:baseline; gap:12px; margin-bottom:14px;
+  }
+  .issue-section-head h2{
+    font-size:20px; margin:0; font-family:Georgia, serif;
+  }
+  .issue-section-head .eyebrow{margin:0;}
+
+  table.issue-table{
+    width:100%; border-collapse:collapse; background:var(--panel);
+    border:1px solid var(--line); border-radius:var(--radius); overflow:hidden;
+    font-size:13px; box-shadow:0 1px 0 rgba(0,0,0,.02);
+  }
+  table.issue-table thead th{
+    background:var(--moss-d); color:#fff; text-align:left; padding:10px 12px;
+    font-weight:700; font-size:12px; letter-spacing:.02em;
+  }
+  table.issue-table tbody td{
+    padding:10px 12px; border-top:1px solid var(--line); vertical-align:top;
+  }
+  table.issue-table tbody tr:nth-child(even){background:#faf9f2;}
+  table.issue-table .iss-id{font-family:'Courier New', monospace; font-weight:700; color:var(--clay); white-space:nowrap;}
+  table.issue-table .sev{
+    display:inline-block; padding:2px 9px; border-radius:10px; font-size:11px;
+    font-weight:700; text-transform:uppercase; letter-spacing:.03em;
+  }
+  .sev.Critical{background:#f2d3c9; color:#8a3418;}
+  .sev.High{background:#f5dfd6; color:var(--clay);}
+  .sev.Medium{background:#f3ead0; color:var(--amber);}
+  .sev.Low{background:#e4e9e2; color:var(--moss-d);}
+  .issue-empty{
+    padding:22px; text-align:center; color:var(--muted); font-size:13px;
+    background:var(--panel); border:1px dashed var(--line); border-radius:var(--radius);
+  }
+  .issue-refs{
+    font-size:12px; color:var(--muted); margin:12px 2px 0;
+  }
+  .issue-refs strong{color:var(--ink);}
+
+  .verdict-box{
+    margin-top:18px; background:#eef2fb; border:1px solid #c7d4ee; border-left:4px solid var(--moss-d);
+    border-radius:0 var(--radius) var(--radius) 0; padding:16px 20px;
+  }
+  .verdict-box h3{
+    margin:0 0 8px; font-size:14.5px; font-family:'Segoe UI', sans-serif; color:var(--moss-d);
+  }
+  .verdict-box p{
+    margin:0; font-size:13px; line-height:1.7; color:#2c3a4d;
+  }
+  .verdict-box .verdict-strong{font-weight:700;}
+
+  footer{
+    text-align:center; color:var(--muted); font-size:11.5px; margin-top:40px;
+    border-top:1px solid var(--line); padding-top:16px;
+  }
+
+  @media(max-width:680px){
+    .case{grid-template-columns:22px 1fr; }
+    .status-col{grid-column:1 / -1;flex-direction:row; flex-wrap:wrap;}
+    header.top{flex-direction:column; align-items:flex-start;}
+    .stat-block{width:100%; justify-content:space-between;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <div>
+      <p class="eyebrow">User Acceptance Test — เอกสารทดสอบตอบรับผู้ใช้</p>
+      <h1>UAT Checklist: ระบบร้านค้าและเคลมประกันสินค้า</h1>
+      <p class="sub">ครอบคลุมขอบเขต 5 กระบวนการหลักตามไดอะแกรม: การสั่งซื้อของลูกค้า, การแจ้งเคลมประกันของลูกค้า, การจัดการคำสั่งซื้อของแอดมิน, การเพิ่มสินค้าของแอดมิน และการจัดการเคลมประกันของแอดมิน</p>
+    </div>
+    <div class="stat-block">
+      <div class="stat"><div class="num" id="stat-total">0</div><div class="lbl">Total Cases</div></div>
+      <div class="stat"><div class="num" id="stat-pass" style="color:var(--pass)">0</div><div class="lbl">Passed</div></div>
+      <div class="stat"><div class="num" id="stat-fail" style="color:var(--fail)">0</div><div class="lbl">Failed</div></div>
+    </div>
+  </header>
+
+  <div class="progress-row">
+    <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
+    <div class="progress-text" id="progress-text">0 / 0 ทดสอบแล้ว (0%)</div>
+  </div>
+
+  <div class="toolbar" id="filter-bar"></div>
+
+  <div id="modules"></div>
+
+  <section class="issue-section">
+    <div class="issue-section-head">
+      <p class="eyebrow">Issue Log</p>
+      <h2>ตารางสรุปปัญหาที่พบ</h2>
+    </div>
+    <div id="issue-table-wrap"></div>
+    <p class="issue-refs" id="issue-refs"></p>
+    <div class="verdict-box">
+      <h3>สรุปผลการประเมิน UAT</h3>
+      <p id="verdict-text"></p>
+    </div>
+  </section>
+
+  <footer>สร้างขึ้นสำหรับการทดสอบ UAT ภายในทีม · ข้อมูลสถานะจะถูกเก็บในหน่วยความจำของหน้านี้เท่านั้น (รีเฟรชหน้าแล้วค่าจะรีเซ็ต) · ใช้ปุ่ม “ส่งออก JSON” เพื่อบันทึกผลก่อนปิดหน้า</footer>
+</div>
+
+<script>
+// ---------- UAT DATA (JSON) ----------
+const uatData = {
+  "modules": [
+    {
+      "id": "purchase",
+      "name": "Purchase Flow (ลูกค้าสั่งซื้อสินค้า)",
+      "tag": "CUSTOMER",
+      "cases": [
+        {
+          "id": "PUR-01",
+          "title": "เรียกดูรายการสินค้าและดูรายละเอียดสินค้า",
+          "priority": "high",
+          "steps": "1. เข้าสู่หน้าร้านค้า\n2. เลือกหมวดหมู่หรือค้นหาสินค้า\n3. คลิกเข้าดูรายละเอียดสินค้า",
+          "expected": "ระบบแสดงรายการสินค้า ราคา สต็อกคงเหลือ และรายละเอียดสินค้าได้ถูกต้องครบถ้วน"
+        },
+        {
+          "id": "PUR-02",
+          "title": "เพิ่มสินค้าลงตะกร้าและปรับจำนวน",
+          "priority": "high",
+          "steps": "1. เลือกจำนวนสินค้า\n2. กดเพิ่มลงตะกร้า\n3. เปิดตะกร้าและแก้ไขจำนวน/ลบสินค้า",
+          "expected": "ตะกร้าอัปเดตจำนวนและยอดรวมถูกต้องแบบเรียลไทม์ ไม่สามารถเพิ่มเกินสต็อกที่มี"
+        },
+        {
+          "id": "PUR-03",
+          "title": "กรอกข้อมูลจัดส่งและเลือกวิธีชำระเงิน",
+          "priority": "high",
+          "steps": "1. กด Checkout จากตะกร้า\n2. กรอกที่อยู่จัดส่ง\n3. เลือกวิธีชำระเงิน (โอน/บัตร/ปลายทาง)",
+          "expected": "ระบบตรวจสอบความครบถ้วนของฟอร์มก่อนดำเนินการต่อ และแสดง error หากข้อมูลไม่ครบ/ไม่ถูกต้อง"
+        },
+        {
+          "id": "PUR-04",
+          "title": "ยืนยันคำสั่งซื้อและชำระเงินสำเร็จ",
+          "priority": "high",
+          "steps": "1. ตรวจสอบสรุปคำสั่งซื้อ\n2. กดยืนยันคำสั่งซื้อ\n3. ดำเนินการชำระเงินให้สำเร็จ",
+          "expected": "ระบบสร้างคำสั่งซื้อสถานะ “รอดำเนินการ/ชำระแล้ว” ตัดสต็อกสินค้า และส่งอีเมล/แจ้งเตือนยืนยันคำสั่งซื้อให้ลูกค้า"
+        },
+        {
+          "id": "PUR-05",
+          "title": "ชำระเงินไม่สำเร็จ / ถูกยกเลิกระหว่างทาง",
+          "priority": "med",
+          "steps": "1. ดำเนินการชำระเงินแต่ปฏิเสธ/ยกเลิกกลางคัน\n2. กลับมาที่ตะกร้าอีกครั้ง",
+          "expected": "คำสั่งซื้อไม่ถูกสร้าง หรือถูกตั้งสถานะ “ชำระเงินไม่สำเร็จ” สินค้าที่จองไว้ถูกคืนกลับสต็อก"
+        },
+        {
+          "id": "PUR-06",
+          "title": "ติดตามสถานะคำสั่งซื้อหลังสั่งซื้อ",
+          "priority": "med",
+          "steps": "1. เข้าเมนู “คำสั่งซื้อของฉัน”\n2. เลือกคำสั่งซื้อที่ต้องการติดตาม",
+          "expected": "แสดงสถานะคำสั่งซื้อปัจจุบันตรงกับสถานะจริงในระบบแอดมิน (เช่น กำลังจัดส่ง/จัดส่งแล้ว)"
+        }
+      ]
+    },
+    {
+      "id": "warranty-customer",
+      "name": "Warranty Claim Flow (ลูกค้าแจ้งเคลมประกัน)",
+      "tag": "CUSTOMER",
+      "cases": [
+        {
+          "id": "WCC-01",
+          "title": "เลือกสินค้าที่ซื้อแล้วเพื่อแจ้งเคลม",
+          "priority": "high",
+          "steps": "1. เข้าเมนูประวัติการสั่งซื้อ\n2. เลือกสินค้าที่ต้องการเคลมประกัน\n3. กด “แจ้งเคลมประกัน”",
+          "expected": "ระบบอนุญาตให้เคลมเฉพาะสินค้าที่อยู่ในระยะเวลาประกัน และปฏิเสธ/แจ้งเตือนหากหมดประกันแล้ว"
+        },
+        {
+          "id": "WCC-02",
+          "title": "กรอกแบบฟอร์มแจ้งปัญหาและแนบหลักฐาน",
+          "priority": "high",
+          "steps": "1. ระบุอาการ/ปัญหาของสินค้า\n2. แนบรูปภาพหรือวิดีโอประกอบ\n3. กดส่งคำร้อง",
+          "expected": "ระบบตรวจสอบฟิลด์บังคับ (คำอธิบาย, รูปภาพ) ก่อนอนุญาตให้ส่งคำร้อง และรองรับไฟล์แนบตามชนิด/ขนาดที่กำหนด"
+        },
+        {
+          "id": "WCC-03",
+          "title": "ส่งคำร้องเคลมสำเร็จและได้รับเลขที่คำร้อง",
+          "priority": "high",
+          "steps": "1. ยืนยันการส่งคำร้อง\n2. ตรวจสอบหน้ายืนยัน/อีเมลแจ้งเตือน",
+          "expected": "ระบบสร้างคำร้องเคลมสถานะ “รอตรวจสอบ” พร้อมเลขที่อ้างอิง และแจ้งเตือนลูกค้าทันที"
+        },
+        {
+          "id": "WCC-04",
+          "title": "ติดตามสถานะคำร้องเคลม",
+          "priority": "med",
+          "steps": "1. เข้าเมนู “คำร้องเคลมของฉัน”\n2. เลือกคำร้องที่ต้องการตรวจสอบ",
+          "expected": "สถานะที่แสดง (รอตรวจสอบ/อนุมัติ/ปฏิเสธ/กำลังดำเนินการ) ตรงกับสถานะจริงที่แอดมินอัปเดต"
+        },
+        {
+          "id": "WCC-05",
+          "title": "รับผลการเคลม (อนุมัติ) และวิธีแก้ไข",
+          "priority": "high",
+          "steps": "1. รอผลพิจารณาจากแอดมิน\n2. ตรวจสอบผลลัพธ์และวิธีดำเนินการ (ซ่อม/เปลี่ยน/คืนเงิน)",
+          "expected": "ลูกค้าได้รับการแจ้งเตือนผลอนุมัติพร้อมรายละเอียดวิธีแก้ไขที่ชัดเจนและขั้นตอนถัดไป"
+        },
+        {
+          "id": "WCC-06",
+          "title": "รับผลการเคลม (ปฏิเสธ) พร้อมเหตุผล",
+          "priority": "med",
+          "steps": "1. รอผลพิจารณาจากแอดมิน\n2. ตรวจสอบเหตุผลการปฏิเสธที่แสดง",
+          "expected": "ลูกค้าเห็นเหตุผลการปฏิเสธคำร้องอย่างชัดเจน และไม่สามารถแก้ไขคำร้องเดิมได้ (ต้องแจ้งเคลมใหม่หากต้องการ)"
+        }
+      ]
+    },
+    {
+      "id": "order-admin",
+      "name": "Admin Manage Order Flow (แอดมินจัดการคำสั่งซื้อ)",
+      "tag": "ADMIN",
+      "cases": [
+        {
+          "id": "ORD-01",
+          "title": "ดูรายการคำสั่งซื้อทั้งหมดและกรองตามสถานะ",
+          "priority": "high",
+          "steps": "1. เข้าเมนูจัดการคำสั่งซื้อ\n2. กรองตามสถานะ (รอดำเนินการ/จัดส่งแล้ว ฯลฯ)\n3. ค้นหาด้วยเลขที่คำสั่งซื้อ",
+          "expected": "รายการคำสั่งซื้อแสดงครบถ้วน ตัวกรองและการค้นหาทำงานได้ถูกต้องตรงกับข้อมูลจริง"
+        },
+        {
+          "id": "ORD-02",
+          "title": "ดูรายละเอียดคำสั่งซื้อรายการเดียว",
+          "priority": "high",
+          "steps": "1. คลิกเลือกคำสั่งซื้อจากรายการ",
+          "expected": "แสดงข้อมูลลูกค้า รายการสินค้า ที่อยู่จัดส่ง ยอดชำระ และประวัติสถานะครบถ้วนถูกต้อง"
+        },
+        {
+          "id": "ORD-03",
+          "title": "อัปเดตสถานะคำสั่งซื้อ (ยืนยัน/แพ็ค/จัดส่ง/สำเร็จ)",
+          "priority": "high",
+          "steps": "1. เลือกคำสั่งซื้อ\n2. เปลี่ยนสถานะตามลำดับขั้นตอน\n3. บันทึกการเปลี่ยนแปลง",
+          "expected": "สถานะเปลี่ยนตามลำดับที่ถูกต้องเท่านั้น (ไม่ข้ามขั้นตอนที่ไม่สมเหตุสมผล) และระบบแจ้งเตือนลูกค้าทุกครั้งที่สถานะเปลี่ยน"
+        },
+        {
+          "id": "ORD-04",
+          "title": "ยกเลิกคำสั่งซื้อโดยแอดมิน",
+          "priority": "med",
+          "steps": "1. เลือกคำสั่งซื้อที่ต้องการยกเลิก\n2. กดยกเลิกและระบุเหตุผล",
+          "expected": "คำสั่งซื้อถูกตั้งสถานะ “ยกเลิก” สต็อกสินค้าถูกคืน และลูกค้าได้รับแจ้งเตือนพร้อมเหตุผล"
+        },
+        {
+          "id": "ORD-05",
+          "title": "พยายามแก้ไขคำสั่งซื้อที่จัดส่งสำเร็จแล้ว",
+          "priority": "low",
+          "steps": "1. เลือกคำสั่งซื้อที่มีสถานะ “สำเร็จ”\n2. พยายามเปลี่ยนสถานะย้อนกลับ",
+          "expected": "ระบบป้องกันการแก้ไข/เปลี่ยนสถานะย้อนกลับของคำสั่งซื้อที่เสร็จสมบูรณ์แล้ว"
+        }
+      ]
+    },
+    {
+      "id": "product-admin",
+      "name": "Admin Add Product Flow (แอดมินเพิ่มสินค้า)",
+      "tag": "ADMIN",
+      "cases": [
+        {
+          "id": "PRD-01",
+          "title": "เข้าถึงฟอร์มเพิ่มสินค้าใหม่",
+          "priority": "med",
+          "steps": "1. เข้าเมนูจัดการสินค้า\n2. กดปุ่ม “เพิ่มสินค้า”",
+          "expected": "ระบบแสดงฟอร์มเพิ่มสินค้าครบทุกฟิลด์ที่จำเป็น (ชื่อ, รายละเอียด, ราคา, หมวดหมู่, สต็อก, รูปภาพ)"
+        },
+        {
+          "id": "PRD-02",
+          "title": "กรอกข้อมูลสินค้าครบถ้วนและอัปโหลดรูปภาพ",
+          "priority": "high",
+          "steps": "1. กรอกชื่อ/รายละเอียด/ราคา/สต็อก\n2. เลือกหมวดหมู่สินค้า\n3. อัปโหลดรูปภาพสินค้า",
+          "expected": "ระบบรับข้อมูลและรูปภาพได้ถูกต้อง รองรับชนิดไฟล์ภาพที่กำหนด และแสดงตัวอย่างก่อนบันทึก"
+        },
+        {
+          "id": "PRD-03",
+          "title": "ตรวจสอบความถูกต้องของข้อมูล (Validation)",
+          "priority": "high",
+          "steps": "1. ปล่อยฟิลด์บังคับว่างไว้ หรือใส่ราคา/สต็อกเป็นค่าติดลบ\n2. กดบันทึก",
+          "expected": "ระบบแสดง error message ที่ชัดเจนต่อฟิลด์ และไม่บันทึกข้อมูลจนกว่าจะแก้ไขให้ถูกต้อง"
+        },
+        {
+          "id": "PRD-04",
+          "title": "บันทึกสินค้าใหม่สำเร็จ",
+          "priority": "high",
+          "steps": "1. กรอกข้อมูลถูกต้องครบถ้วน\n2. กดบันทึก/ยืนยัน",
+          "expected": "สินค้าใหม่ถูกบันทึกลงฐานข้อมูล ปรากฏในรายการสินค้าฝั่งลูกค้าทันที พร้อมข้อความยืนยันสำเร็จ"
+        },
+        {
+          "id": "PRD-05",
+          "title": "เพิ่มสินค้าซ้ำ (ชื่อ/รหัสสินค้าซ้ำกับที่มีอยู่)",
+          "priority": "low",
+          "steps": "1. กรอกชื่อ/SKU ที่ตรงกับสินค้าที่มีอยู่แล้ว\n2. กดบันทึก",
+          "expected": "ระบบแจ้งเตือนว่าพบข้อมูลซ้ำ และให้แอดมินยืนยันหรือแก้ไขก่อนบันทึกจริง"
+        }
+      ]
+    },
+    {
+      "id": "warranty-admin",
+      "name": "Manage Warranty Claim Flow (แอดมินจัดการเคลมประกัน)",
+      "tag": "ADMIN",
+      "cases": [
+        {
+          "id": "WCA-01",
+          "title": "ดูรายการคำร้องเคลมประกันทั้งหมด",
+          "priority": "high",
+          "steps": "1. เข้าเมนูจัดการเคลมประกัน\n2. กรองตามสถานะ (รอตรวจสอบ/อนุมัติ/ปฏิเสธ)",
+          "expected": "รายการคำร้องแสดงครบถ้วนตรงกับที่ลูกค้าส่งเข้ามา พร้อมสถานะปัจจุบันถูกต้อง"
+        },
+        {
+          "id": "WCA-02",
+          "title": "เปิดดูรายละเอียดคำร้องและหลักฐานที่แนบ",
+          "priority": "high",
+          "steps": "1. เลือกคำร้องจากรายการ\n2. ตรวจสอบข้อมูลสินค้า อาการที่แจ้ง และรูปภาพ/วิดีโอที่แนบ",
+          "expected": "แสดงข้อมูลคำร้องและไฟล์แนบครบถ้วน เปิดดูรูปภาพ/วิดีโอได้ชัดเจนไม่มีไฟล์เสียหาย"
+        },
+        {
+          "id": "WCA-03",
+          "title": "อนุมัติคำร้องเคลมและเลือกวิธีแก้ไข",
+          "priority": "high",
+          "steps": "1. ตรวจสอบคำร้องแล้วกด “อนุมัติ”\n2. เลือกวิธีแก้ไข (ซ่อม/เปลี่ยนสินค้า/คืนเงิน)\n3. บันทึกผล",
+          "expected": "สถานะคำร้องเปลี่ยนเป็น “อนุมัติ” พร้อมวิธีแก้ไขที่เลือก และลูกค้าได้รับแจ้งเตือนทันที"
+        },
+        {
+          "id": "WCA-04",
+          "title": "ปฏิเสธคำร้องเคลมพร้อมระบุเหตุผล",
+          "priority": "high",
+          "steps": "1. ตรวจสอบคำร้องแล้วกด “ปฏิเสธ”\n2. ระบุเหตุผลการปฏิเสธ\n3. บันทึกผล",
+          "expected": "ระบบบังคับให้กรอกเหตุผลก่อนบันทึกการปฏิเสธ และลูกค้าได้รับแจ้งเตือนพร้อมเหตุผลที่ระบุ"
+        },
+        {
+          "id": "WCA-05",
+          "title": "อัปเดตความคืบหน้าหลังอนุมัติ (กำลังซ่อม/จัดส่งของใหม่)",
+          "priority": "med",
+          "steps": "1. เลือกคำร้องที่อนุมัติแล้ว\n2. อัปเดตสถานะความคืบหน้า",
+          "expected": "สถานะความคืบหน้าที่ลูกค้าเห็นอัปเดตตรงกับสิ่งที่แอดมินบันทึกแบบเรียลไทม์"
+        },
+        {
+          "id": "WCA-06",
+          "title": "ปิดงานเคลมเมื่อดำเนินการเสร็จสิ้น",
+          "priority": "med",
+          "steps": "1. ยืนยันว่าซ่อม/เปลี่ยน/คืนเงินเสร็จสมบูรณ์\n2. กดปิดงาน",
+          "expected": "คำร้องถูกตั้งสถานะ “เสร็จสิ้น” ไม่สามารถแก้ไขย้อนกลับได้ และลูกค้าได้รับแจ้งเตือนปิดงาน"
+        }
+      ]
+    }
+  ]
+};
+
+// ---------- STATE ----------
+const state = {}; // caseId -> {status, note, issueType, severity}
+const ISSUE_TYPES = [
+  "ระบบทำงานไม่ตรงตามความต้องการ",
+  "ปัญหาด้านประสิทธิภาพ",
+  "ปัญหาเกี่ยวกับข้อมูล",
+  "ปัญหาด้าน UI/UX",
+  "ปัญหาด้านความปลอดภัย",
+];
+const SEVERITIES = ["Critical","High","Medium","Low"];
+function defaultSeverity(priority){
+  return priority === 'high' ? 'High' : priority === 'med' ? 'Medium' : 'Low';
+}
+uatData.modules.forEach(m => m.cases.forEach(c => state[c.id] = {
+  status:'pending', note:'', issueType: ISSUE_TYPES[0], severity: defaultSeverity(c.priority)
+}));
+let activeFilter = 'all';
+let issueCounter = 0;
+
+// ---------- RENDER ----------
+const modulesEl = document.getElementById('modules');
+const filterBar = document.getElementById('filter-bar');
+
+function renderFilterBar(){
+  filterBar.innerHTML = '';
+  const allBtn = document.createElement('button');
+  allBtn.className = 'filter-btn active';
+  allBtn.textContent = 'ทั้งหมด';
+  allBtn.dataset.f = 'all';
+  filterBar.appendChild(allBtn);
+  uatData.modules.forEach(m=>{
+    const b = document.createElement('button');
+    b.className = 'filter-btn';
+    b.textContent = m.name.split(' (')[0];
+    b.dataset.f = m.id;
+    filterBar.appendChild(b);
+  });
+  const spacer = document.createElement('div');
+  spacer.className = 'spacer';
+  filterBar.appendChild(spacer);
+
+  const resetBtn = document.createElement('button');
+  resetBtn.className = 'icon-btn ghost';
+  resetBtn.textContent = 'รีเซ็ตทั้งหมด';
+  resetBtn.onclick = ()=>{
+    if(confirm('ล้างผลการทดสอบทั้งหมด?')){
+      Object.keys(state).forEach(k=>{state[k]={status:'pending', note:''};});
+      renderModules();
+    }
+  };
+  filterBar.appendChild(resetBtn);
+
+  const exportBtn = document.createElement('button');
+  exportBtn.className = 'icon-btn';
+  exportBtn.textContent = '⬇ ส่งออก JSON';
+  exportBtn.onclick = exportResults;
+  filterBar.appendChild(exportBtn);
+
+  const printBtn = document.createElement('button');
+  printBtn.className = 'icon-btn ghost';
+  printBtn.textContent = '🖨 พิมพ์';
+  printBtn.onclick = ()=>window.print();
+  filterBar.appendChild(printBtn);
+
+  filterBar.querySelectorAll('.filter-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      activeFilter = btn.dataset.f;
+      filterBar.querySelectorAll('.filter-btn').forEach(x=>x.classList.remove('active'));
+      btn.classList.add('active');
+      renderModules();
+    });
+  });
+}
+
+function prioLabel(p){
+  return p === 'high' ? 'สำคัญมาก' : p === 'med' ? 'ปานกลาง' : 'ต่ำ';
+}
+
+function renderModules(){
+  modulesEl.innerHTML = '';
+  uatData.modules.forEach(mod=>{
+    if(activeFilter !== 'all' && activeFilter !== mod.id) return;
+
+    const group = document.createElement('div');
+    group.className = 'module-group';
+
+    const head = document.createElement('div');
+    head.className = 'module-head';
+    head.innerHTML = `<span class="module-tag">${mod.tag}</span>
+      <h2 class="module-title">${mod.name}</h2>
+      <span class="module-count">${mod.cases.length} test cases</span>`;
+    group.appendChild(head);
+
+    mod.cases.forEach(c=>{
+      const st = state[c.id];
+      const card = document.createElement('div');
+      card.className = 'case' + (st.status !== 'pending' ? ' done' : '');
+
+      const cb = document.createElement('input');
+      cb.type = 'checkbox';
+      cb.checked = st.status === 'pass';
+      cb.addEventListener('change', ()=>{
+        st.status = cb.checked ? 'pass' : 'pending';
+        sync();
+      });
+
+      const body = document.createElement('div');
+      body.innerHTML = `
+        <div class="case-id">${c.id} <span class="prio ${c.priority}">${prioLabel(c.priority)}</span></div>
+        <div class="case-title">${c.title}</div>
+        <div class="case-steps">${c.steps}</div>
+        <div class="case-expect"><strong>ผลลัพธ์ที่คาดหวัง:</strong> ${c.expected}</div>
+      `;
+
+      const statusCol = document.createElement('div');
+      statusCol.className = 'status-col';
+
+      const sel = document.createElement('select');
+      sel.className = 'status-select ' + st.status;
+      sel.innerHTML = `
+        <option value="pending" ${st.status==='pending'?'selected':''}>⏳ ยังไม่ทดสอบ</option>
+        <option value="pass" ${st.status==='pass'?'selected':''}>✅ ผ่าน</option>
+        <option value="fail" ${st.status==='fail'?'selected':''}>❌ ไม่ผ่าน</option>
+      `;
+      sel.addEventListener('change', ()=>{
+        st.status = sel.value;
+        sel.className = 'status-select ' + st.status;
+        cb.checked = st.status === 'pass';
+        sync();
+      });
+
+      const note = document.createElement('textarea');
+      note.className = 'note';
+      note.placeholder = 'บันทึกผล/บั๊กที่พบ...';
+      note.value = st.note;
+      note.addEventListener('input', ()=>{ st.note = note.value; updateIssueTable(); });
+
+      statusCol.appendChild(sel);
+      statusCol.appendChild(note);
+
+      if(st.status === 'fail'){
+        const issueFields = document.createElement('div');
+        issueFields.className = 'issue-fields';
+
+        const typeSel = document.createElement('select');
+        typeSel.innerHTML = ISSUE_TYPES.map(t=>`<option value="${t}" ${st.issueType===t?'selected':''}>${t}</option>`).join('');
+        typeSel.addEventListener('change', ()=>{ st.issueType = typeSel.value; updateIssueTable(); });
+
+        const sevSel = document.createElement('select');
+        sevSel.innerHTML = SEVERITIES.map(s=>`<option value="${s}" ${st.severity===s?'selected':''}>${s}</option>`).join('');
+        sevSel.addEventListener('change', ()=>{ st.severity = sevSel.value; updateIssueTable(); });
+
+        issueFields.appendChild(typeSel);
+        issueFields.appendChild(sevSel);
+        statusCol.appendChild(issueFields);
+      }
+
+      card.appendChild(cb);
+      card.appendChild(body);
+      card.appendChild(statusCol);
+      group.appendChild(card);
+    });
+
+    modulesEl.appendChild(group);
+  });
+}
+
+function sync(){
+  renderModules();
+  updateStats();
+  updateIssueTable();
+}
+
+function updateStats(){
+  const all = Object.values(state);
+  const total = all.length;
+  const pass = all.filter(s=>s.status==='pass').length;
+  const fail = all.filter(s=>s.status==='fail').length;
+  const tested = pass + fail;
+  document.getElementById('stat-total').textContent = total;
+  document.getElementById('stat-pass').textContent = pass;
+  document.getElementById('stat-fail').textContent = fail;
+  const pct = total ? Math.round((tested/total)*100) : 0;
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('progress-text').textContent = `${tested} / ${total} ทดสอบแล้ว (${pct}%)`;
+}
+
+function sevRank(s){ return {Critical:0, High:1, Medium:2, Low:3}[s] ?? 9; }
+
+function updateIssueTable(){
+  const wrap = document.getElementById('issue-table-wrap');
+  const refsEl = document.getElementById('issue-refs');
+  const verdictEl = document.getElementById('verdict-text');
+
+  // collect failed cases with their module for reference
+  const failed = [];
+  uatData.modules.forEach(m=>{
+    m.cases.forEach(c=>{
+      const st = state[c.id];
+      if(st.status === 'fail') failed.push({case: c, module: m, st});
+    });
+  });
+
+  failed.sort((a,b)=> sevRank(a.st.severity) - sevRank(b.st.severity));
+
+  if(failed.length === 0){
+    wrap.innerHTML = `<div class="issue-empty">ยังไม่พบปัญหา — เมื่อทำเครื่องหมาย test case ใดว่า “ไม่ผ่าน” ระบบจะสรุปมาไว้ในตารางนี้โดยอัตโนมัติ</div>`;
+    refsEl.textContent = '';
+  } else {
+    const rows = failed.map((f, idx)=>{
+      const issId = 'ISS-' + String(idx+1).padStart(3,'0');
+      const detail = f.st.note && f.st.note.trim() ? f.st.note.trim() : f.case.title;
+      return `<tr>
+        <td class="iss-id">${issId}</td>
+        <td>${detail}<br><span style="color:var(--muted); font-size:11px;">อ้างอิง ${f.case.id} — ${f.module.name.split(' (')[0]}</span></td>
+        <td>${f.st.issueType}</td>
+        <td><span class="sev ${f.st.severity}">${f.st.severity}</span></td>
+      </tr>`;
+    }).join('');
+
+    wrap.innerHTML = `
+      <table class="issue-table">
+        <thead>
+          <tr><th>Issue ID</th><th>รายละเอียดปัญหา</th><th>ประเภทปัญหา</th><th>ระดับความสำคัญ</th></tr>
+        </thead>
+        <tbody>${rows}</tbody>
+      </table>`;
+
+    refsEl.innerHTML = `<strong>อ้างอิงจากผลการทดสอบ:</strong> ${failed.map(f=>f.case.id).join(', ')}`;
+  }
+
+  // verdict
+  const all = Object.values(state);
+  const total = all.length;
+  const pass = all.filter(s=>s.status==='pass').length;
+  const criticalOrHigh = failed.filter(f=>f.st.severity==='Critical' || f.st.severity==='High');
+  const affectedModules = [...new Set(criticalOrHigh.map(f=>f.module.name.split(' (')[0]))];
+
+  let verdict;
+  if(total === 0){
+    verdict = 'ยังไม่มี test case ในระบบ';
+  } else if(failed.length === 0 && pass === total){
+    verdict = `Test Case ผ่านการทดสอบครบทั้ง ${total} รายการ ไม่พบปัญหาที่ต้องแก้ไข ระบบมีความพร้อมสำหรับการส่งมอบหรือเผยแพร่ใช้งานจริง`;
+  } else if(failed.length === 0){
+    verdict = `มี Test Case ผ่านการทดสอบแล้ว ${pass} จาก ${total} รายการ และยังไม่พบปัญหาในรายการที่ทดสอบจนถึงขณะนี้ ควรทดสอบส่วนที่เหลือให้ครบก่อนสรุปผล`;
+  } else {
+    const moduleText = affectedModules.length
+      ? `ได้แก่ ${affectedModules.join(', ')}`
+      : 'ในบางฟังก์ชันของระบบ';
+    verdict = `เนื่องจากมี Test Case ผ่านการทดสอบเพียง ${pass} จาก ${total} รายการ และพบปัญหาระดับ Critical/High ${moduleText} จึงควรดำเนินการแก้ไข Issue ที่พบทั้งหมดก่อนการส่งมอบหรือเผยแพร่ระบบใช้งานจริง`;
+  }
+  verdictEl.innerHTML = `<span class="verdict-strong">${verdict}</span>`;
+}
+
+function exportResults(){
+  const result = uatData.modules.map(m=>({
+    module: m.name,
+    cases: m.cases.map(c=>({
+      id: c.id, title: c.title, priority: c.priority,
+      status: state[c.id].status, note: state[c.id].note,
+      issueType: state[c.id].status === 'fail' ? state[c.id].issueType : undefined,
+      severity: state[c.id].status === 'fail' ? state[c.id].severity : undefined
+    }))
+  }));
+  const issues = [];
+  uatData.modules.forEach(m=>m.cases.forEach(c=>{
+    const st = state[c.id];
+    if(st.status === 'fail'){
+      issues.push({
+        detail: st.note && st.note.trim() ? st.note.trim() : c.title,
+        type: st.issueType, severity: st.severity,
+        refCase: c.id, module: m.name
+      });
+    }
+  }));
+  const blob = new Blob([JSON.stringify({exported_at: new Date().toISOString(), results: result, issue_log: issues}, null, 2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'uat_results.json';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+renderFilterBar();
+renderModules();
+updateStats();
+updateIssueTable();
+</script>
+</body>
+</html>
