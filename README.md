@@ -1,8 +1,8 @@
 # E-Commerce Tlecomkub
 
 ## ลิ้งหน้าเว็ป
-[LinkWeb](https://moo-tle-com-kub-ex3e.vercel.app/)
-[กระบวนการทดสอบ UAT](uat_checklist.html)
+- [LinkWeb](https://moo-tle-com-kub-ex3e.vercel.app/)
+- [กระบวนการทดสอบ UAT](uat_checklist.html)
 
 **สมาชิก**
 - 67144643 สุรวุฒิ บุญยู้ ( Leader Dev & Project Manager )
