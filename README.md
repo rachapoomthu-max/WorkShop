@@ -3,7 +3,7 @@
 ## ลิ้งหน้าเว็ป
 - [Document](https://rachapoomthu-max.github.io/WorkShop/)
 - [LinkWeb](https://moo-tle-com-kub-ex3e.vercel.app/)
-- [กระบวนการทดสอบ UAT]([uat_checklist.html](https://rachapoomthu-max.github.io/WorkShop/uat_checklist.html))
+- [กระบวนการทดสอบ UAT](https://rachapoomthu-max.github.io/WorkShop/uat_checklist.html)
 
 **สมาชิก**
 - 67144643 สุรวุฒิ บุญยู้ ( Leader Dev & Project Manager )
