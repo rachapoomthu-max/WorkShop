@@ -2,6 +2,7 @@
 
 ## ลิ้งหน้าเว็ป
 - [Document](https://rachapoomthu-max.github.io/WorkShop/)
+- [DataSchema](/Data_Schema_Formatted.md)
 - [LinkWeb](https://moo-tle-com-kub-ex3e.vercel.app/)
 - [กระบวนการทดสอบ UAT](https://rachapoomthu-max.github.io/WorkShop/uat_checklist.html)
 
